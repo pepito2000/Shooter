@@ -31,7 +31,7 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites){
   Perso p;
   p.tempsTirPrecedent = 0;
   p.image = sprites[2];
-  //génère des coordonnées de spawn aléatoires(provisoire)
+  //gÃ©nÃ¨re des coordonnÃ©es de spawn alÃ©atoires(provisoire)
   p.pos.x = rand()%900 + 100;
   p.pos.y = rand()%600 + 100;
   p.pos.w = 60;
@@ -55,7 +55,7 @@ void afficher_perso(SDL_Renderer *renderer, Perso p)
   SDL_RenderCopyEx(renderer, p.image, &p.srcrect, &p.pos, p.angle, NULL, SDL_FLIP_NONE);
 }
 
-void deplacement_joueur(Perso *p)
+void deplacement_joueur(Perso *p, SDL_Rect *tabMur)
 {
   int dX = 0;
   int dY = 0;
@@ -86,8 +86,29 @@ void deplacement_joueur(Perso *p)
     dY = dY/4;
   }
 
-  p->pos.x += dX * p->vitesse;
-  p->pos.y += dY * p->vitesse;
+
+  int res = 0;
+  if(p->pos.x + dX*p->vitesse < 950 && p->pos.x + dX*p->vitesse > 0 && p->pos.y + dY*p->vitesse < 670 && p->pos.y + dY*p->vitesse > 0){
+  for(int i = 0; i < 3; i++){
+        if (p->pos.x + dX*p->vitesse <= tabMur[i].x + tabMur[i].w && p->pos.x + p->pos.w + dX*p->vitesse >= tabMur[i].x && p->pos.y + dY*p->vitesse<= tabMur[i].y + tabMur[i].h
+            && p->pos.h + p->pos.y + dY*p->vitesse >= tabMur[i].y ) {
+             //collision dï¿½tectï¿½e !
+            res = -100;
+
+        }
+        else{
+            res += 1;
+
+        }
+    }
+
+  }
+
+  if(res >= 1){
+        p->pos.x += dX * p->vitesse;
+        p->pos.y += dY * p->vitesse;
+  }
+
 
 }
 
