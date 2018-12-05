@@ -1,5 +1,8 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include <math.h>
+#include <stdlib.h>
+#define PI 3.14159265359
 
 typedef struct s_Balle balle, s_Balle;
 struct s_Balle

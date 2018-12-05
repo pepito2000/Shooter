@@ -1,12 +1,11 @@
-#include <SDL2/SDL.h>
-#include <stdbool.h>
+#include <time.h>
+#include <math.h>
 #include "image.h"
+#include "listeR.h"
 
-typedef enum AnimationType Anim;
-enum AnimationType
-{
-    IDLE, MOUVEMENT, TIR, CUT, MORT
-};
+#define PI 3.14159265359
+
+
 
 typedef struct s_Personnage Perso;
 struct s_Personnage
@@ -21,13 +20,15 @@ struct s_Personnage
   int animFlip;
   bool tir;
   bool ennemi;
-  Anim anim;
 };
 
 
 Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites);
 Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites);
 void afficher_perso(SDL_Renderer *renderer, Perso p);
-void deplacement_joueur(Perso *p, SDL_Rect *tabMur);
+void deplacement_joueur(Perso *p, ListeR L, int *xCamera, int *yCamera, int *dxCamera, int *dyCamera);
+void deplacement_ennemi(Perso *p, int xCamera, int yCamera, int dxCamera, int dyCamera);
+void angle_ennemi(Perso *p);
 void angle_joueur(Perso *p, float mouseX, float mouseY);
 void animer_perso(Perso *p);
+

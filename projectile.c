@@ -1,10 +1,4 @@
-#include <SDL2/SDL.h>
-#include <math.h>
-#include <stdlib.h>
 #include "projectile.h"
-
-
-#define PI 3.14159265359
 
 
 balle nouvelle_balle(SDL_Texture *image, float angle, SDL_Rect persoPos)
@@ -20,8 +14,8 @@ balle nouvelle_balle(SDL_Texture *image, float angle, SDL_Rect persoPos)
 //v = vitesse de la balle (provisoire)
 void incrementer_balle(balle *b, int v)
 {
-  b->ballePos.x += (int)(cos(b->angle * PI / 180) * v);
-  b->ballePos.y += (int)(sin(b->angle * PI / 180) * v);
+  b->ballePos.x += round(cos(b->angle * PI / 180) * v);
+  b->ballePos.y += round(sin(b->angle * PI / 180) * v);
 }
 
 
