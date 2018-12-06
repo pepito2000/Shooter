@@ -11,9 +11,10 @@ struct s_Balle
     float angle;
     SDL_Texture *image;
     bool collision;
+    int degats;
 };
 
-balle nouvelle_balle(SDL_Texture *image, float angle, SDL_Rect persoPos);
+balle nouvelle_balle(SDL_Texture *image, float angle, int degats, SDL_Rect persoPos);
 void incrementer_balle(balle *b, int vitesse);
 void afficher_balle(SDL_Renderer *renderer, balle b);
 

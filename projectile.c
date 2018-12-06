@@ -1,13 +1,14 @@
 #include "projectile.h"
 
 
-balle nouvelle_balle(SDL_Texture *image, float angle, SDL_Rect persoPos)
+balle nouvelle_balle(SDL_Texture *image, float angle, int degats, SDL_Rect persoPos)
 {
   balle b;
   b.angle = angle;
   b.collision = false;
   b.image = image;
   b.ballePos = persoPos;
+  b.degats = degats;
   return b;
 }
 

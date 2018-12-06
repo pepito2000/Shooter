@@ -8,11 +8,12 @@ ListeB nouvelle_listeB(balle data){
   return L;
 }
 
-ListeB cons_listeB(ListeB L, balle data){
-  ListeB tmp;
-  tmp = nouvelle_listeB(data);
-  tmp->next = L;
-  return tmp;
+void cons_listeB(ListeB *L, balle data){
+  ListeB tmp = malloc(sizeof(s_ListeB));
+  tmp->data = data;
+  tmp->next = *L;
+  *L = tmp;
+  return ;
 }
 
 bool est_vide_listeB(ListeB L) {
@@ -21,7 +22,7 @@ bool est_vide_listeB(ListeB L) {
 
 
 
-ListeB incrementer_balles(ListeB LB, ListeP LP, ListeR LR, int v, int xCamera, int yCamera)
+ListeB incrementer_balles(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int v, int xCamera, int yCamera, SDL_Texture **sprites)
 {
   if(LB == NULL){
     return LB;
@@ -38,7 +39,7 @@ ListeB incrementer_balles(ListeB LB, ListeP LP, ListeR LR, int v, int xCamera, i
   if(ballePos.x < 0 || ballePos.x >= 1000 || ballePos.y <= 0 || ballePos.y >= 700
      || detecter_collision_murs(LR, ballePos, xCamera, yCamera)){
     LB = LB->next;
-    return incrementer_balles(LB, LP, LR, v, xCamera, yCamera);
+    return incrementer_balles(LB, LP, LR, LE, v, xCamera, yCamera, sprites);
   }
 
   ballePos.w = 6;
@@ -46,13 +47,13 @@ ListeB incrementer_balles(ListeB LB, ListeP LP, ListeR LR, int v, int xCamera, i
   ballePos.x = LB->data.ballePos.x - 3;
   ballePos.y = LB->data.ballePos.y - 3;
 
-  if(detecter_collision_perso(LP, ballePos, xCamera, yCamera)) {
+  if(detecter_collision_perso(LP, LE, ballePos, LB->data.degats ,xCamera, yCamera, sprites)) {
     LB = LB->next;
-    return incrementer_balles(LB, LP, LR, v, xCamera, yCamera);
+    return incrementer_balles(LB, LP, LR, LE, v, xCamera, yCamera, sprites);
   }
 
 
-  LB->next = incrementer_balles(LB->next, LP, LR, v, xCamera, yCamera);
+  LB->next = incrementer_balles(LB->next, LP, LR, LE, v, xCamera, yCamera, sprites);
   return LB;
 
 
@@ -67,21 +68,23 @@ void afficher_listeB(SDL_Renderer *renderer, ListeB L) {
   }
 }
 
-ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, int time, SDL_Texture *balleLongueJaune, int v, int xCamera, int yCamera){
+ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int time, SDL_Texture *balleLongueJaune, int v, int xCamera, int yCamera, SDL_Texture **sprites){
   //Si perso en train de tirer
   s_ListeP *tmp = LP;
   while(tmp != NULL){
     if(tmp->data.tir){
       //On fait pop une nouvelle balle toutes les X ms
       if(time > tmp->data.tempsTirPrecedent + 200) {
-        LB = cons_listeB(LB, nouvelle_balle(balleLongueJaune, tmp->data.angle, tmp->data.pos));
+        cons_listeB(&LB, nouvelle_balle(balleLongueJaune, tmp->data.angle, tmp->data.degats, tmp->data.pos));
         tmp->data.tempsTirPrecedent = time;
       }
     }
     tmp = tmp->next;
   }
   //On met a jour les coordonnées des balles déjà tirées, dépop si nécéssaire
-  LB = incrementer_balles(LB, LP, LR, v, xCamera, yCamera);
+  LB = incrementer_balles(LB, LP, LR, LE, v, xCamera, yCamera, sprites);
+
+
   return LB;
 }
 

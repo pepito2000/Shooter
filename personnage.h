@@ -16,6 +16,7 @@ struct s_Personnage
   float angle;
   int tempsTirPrecedent;
   int vie;
+  int degats;
   int vitesse;
   int animFlip;
   bool tir;
