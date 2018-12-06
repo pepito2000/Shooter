@@ -61,12 +61,12 @@ bool detecter_collision_perso(ListeP L, ListeE *LE, SDL_Rect rect, int degats, i
   while(L != NULL){
     ax1 = rect.x;
     ax2 = rect.x + rect.w ;
-    bx1 = L->data.pos.x;
-    bx2 = L->data.pos.x + L->data.pos.w;
+    bx1 = L->data.pos.x - 0.3 * L->data.pos.w;
+    bx2 = L->data.pos.x + 0.6 * L->data.pos.w;
     ay1 = rect.y;
     ay2 = rect.y;
-    by1 = L->data.pos.y;
-    by2 = L->data.pos.y + L->data.pos.h;
+    by1 = L->data.pos.y - 0.3 * L->data.pos.h;
+    by2 = L->data.pos.y + 0.6 * L->data.pos.h;
 
     if(ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1 && L->data.ennemi){
       L->data.vie -= degats;

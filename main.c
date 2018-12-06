@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     fond = charger_image("sprites/fond.png", ecran, -1, -1, -1);
     perso = charger_image("sprites/perso/handgun/idle/survivor_idle.png", ecran, 255, 255, 255);
     sprites[0] = perso;
-    perso = charger_image("sprites/ennemis/zombie/move/zombie_move.png", ecran, 255, 255, 255);
+    perso = charger_image("sprites/ennemis/zombie/move/zombie_moveV2.png", ecran, 0, 0, -1);
     sprites[1] = perso;
     perso = charger_image("sprites/effets/blood/blood_hitv3.png", ecran, 0, 0, -1);
     sprites[2] = perso;

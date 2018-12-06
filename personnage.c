@@ -17,6 +17,7 @@ Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites){
   p.vie = 100;
   p.degats = 25;
   p.vitesse = 4;
+  p.yMax = 0;
   p.tir = false;
   p.ennemi = false;
   p.animFlip = 1;
@@ -30,16 +31,17 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites){
   //génère des coordonnées de spawn aléatoires(provisoire)
   p.pos.x = rand()%100 + 0;
   p.pos.y = rand()%700 + 0;
-  p.pos.w = 60;
-  p.pos.h = 60;
+  p.pos.w = 50;
+  p.pos.h = 50;
   p.srcrect.x = 0;
   p.srcrect.y = 0;
-  p.srcrect.w = 288;
-  p.srcrect.h = 311;
+  p.srcrect.w = 229;
+  p.srcrect.h = 259;
   p.angle = 0;
   p.vie = 100;
   p.degats = 10;
   p.vitesse = 2;
+  p.yMax = 4403;
   p.tir = false;
   p.ennemi = true;
   p.animFlip = 1;
@@ -127,14 +129,14 @@ void angle_joueur(Perso *p, float mouseX, float mouseY){
 
 void angle_ennemi(Perso *p){
   float angle;
-  angle = atan2( 350 - (p->pos.y + 20), 500 - (p->pos.x + 20));
+  angle = atan2(350 - (p->pos.y + 20), 500 - (p->pos.x + 20));
   p->angle = angle;
   return;
 }
 
 void animer_perso(Perso *p){
   p->srcrect.y += p->srcrect.h * p->animFlip;
-  if(p->srcrect.y > 4976|| p->srcrect.y < 0){
+  if(p->srcrect.y >= p->yMax|| p->srcrect.y < 0){
     p->animFlip = -p->animFlip;
     p->srcrect.y += p->srcrect.h * p->animFlip;
   }
