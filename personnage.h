@@ -1,4 +1,5 @@
 #include <time.h>
+#include <stdio.h>
 #include <math.h>
 #include "image.h"
 #include "listeR.h"
@@ -19,6 +20,7 @@ struct s_Personnage
   int degats;
   int vitesse;
   int animFlip;
+  int yMax;
   bool tir;
   bool ennemi;
 };
@@ -28,8 +30,7 @@ Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites);
 Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites);
 void afficher_perso(SDL_Renderer *renderer, Perso p);
 void deplacement_joueur(Perso *p, ListeR L, int *xCamera, int *yCamera, int *dxCamera, int *dyCamera);
-void deplacement_ennemi(Perso *p, int xCamera, int yCamera, int dxCamera, int dyCamera);
 void angle_ennemi(Perso *p);
 void angle_joueur(Perso *p, float mouseX, float mouseY);
-void animer_perso(Perso *p);
+void animer_perso(Perso *p, Perso *joueur, SDL_Texture **sprites);
 

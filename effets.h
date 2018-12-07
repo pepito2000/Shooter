@@ -8,7 +8,7 @@ struct s_Effet
     SDL_Rect srcrect;
     SDL_Texture *image;
     float angle;
-    int xMax;
+    int yMax;
 };
 
 Effet nouvel_effet_bloodHit(SDL_Texture **sprites, SDL_Rect pos, int angle);

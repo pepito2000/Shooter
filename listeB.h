@@ -11,7 +11,7 @@ struct s_ListeB
     balle data;
 };
 
-ListeB nouvelle_listeB(balle data);
+
 void cons_listeB(ListeB *L, balle data);
 bool est_vide_listeB(ListeB L);
 ListeB incrementer_balles(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int v, int xCamera, int yCamera,  SDL_Texture **sprites);

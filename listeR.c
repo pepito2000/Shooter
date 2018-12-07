@@ -1,14 +1,6 @@
 #include "listeR.h"
 
 
-
-ListeR nouvelle_listeR(SDL_Rect data){
-  ListeR L = malloc(sizeof(s_ListeR));
-  L->data = data;
-  L->next = NULL;
-  return L;
-}
-
 void cons_listeR(ListeR *L, SDL_Rect data){
   ListeR tmp = malloc(sizeof(s_ListeR));
   tmp->data = data;

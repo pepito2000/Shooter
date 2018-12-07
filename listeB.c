@@ -1,19 +1,12 @@
 #include "listeB.h"
 
 
-ListeB nouvelle_listeB(balle data){
-  ListeB L = malloc(sizeof(s_ListeB));
-  L->data = data;
-  L->next = NULL;
-  return L;
-}
-
 void cons_listeB(ListeB *L, balle data){
   ListeB tmp = malloc(sizeof(s_ListeB));
   tmp->data = data;
   tmp->next = *L;
   *L = tmp;
-  return ;
+  return;
 }
 
 bool est_vide_listeB(ListeB L) {
@@ -72,7 +65,7 @@ ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int time, SDL_Tex
   //Si perso en train de tirer
   s_ListeP *tmp = LP;
   while(tmp != NULL){
-    if(tmp->data.tir){
+    if(tmp->data.tir && tmp->data.ennemi == false){
       //On fait pop une nouvelle balle toutes les X ms
       if(time > tmp->data.tempsTirPrecedent + 200) {
         cons_listeB(&LB, nouvelle_balle(balleLongueJaune, tmp->data.angle, tmp->data.degats, tmp->data.pos));

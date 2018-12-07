@@ -7,9 +7,9 @@ Effet nouvel_effet_bloodHit(SDL_Texture **sprites, SDL_Rect pos, int angle){
   e.srcrect.y = 0;
   e.srcrect.w = 128;
   e.srcrect.h = 128;
-  e.image = sprites[2];
+  e.image = sprites[3];
   e.angle = angle - 90;
-  e.xMax = 1920;
+  e.yMax = 1920;
   return e;
 }
 

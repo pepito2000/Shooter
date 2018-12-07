@@ -1,5 +1,6 @@
 #include "listeE.h"
 
+
 void cons_listeE(ListeE *L, Effet data){
   ListeE tmp = malloc(sizeof(s_ListeE));
   tmp->data = data;
@@ -12,7 +13,7 @@ void animer_effets(ListeE L){
   ListeE tmp;
   while(L != NULL){
     L->data.srcrect.y += L->data.srcrect.h;
-    if(L->data.srcrect.y >= L->data.xMax){
+    if(L->data.srcrect.y >= L->data.yMax){
       if(L->next == NULL){
         tmp = NULL;
         L = tmp;

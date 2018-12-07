@@ -105,19 +105,6 @@ void deplacement_joueur(Perso *p, ListeR L, int *xCamera, int *yCamera, int *dxC
   return;
 }
 
-void deplacement_ennemi(Perso *p, int xCamera, int yCamera, int dxCamera, int dyCamera){
-  if(p != NULL){
-    if(p->ennemi){
-      //Màj de la direction du perso
-      angle_ennemi(p);
-      //Compensation du décalage de la caméra + ajout du déplacement
-      p->pos.x += round(-dxCamera + cos(p->angle) * p->vitesse);
-      p->pos.y += round(-dyCamera + sin(p->angle) * p->vitesse);
-      p->angle = (p->angle * 180.0000)/PI;
-    }
-  }
-  return;
-}
 
 void angle_joueur(Perso *p, float mouseX, float mouseY){
   float angle;
@@ -134,11 +121,47 @@ void angle_ennemi(Perso *p){
   return;
 }
 
-void animer_perso(Perso *p){
-  p->srcrect.y += p->srcrect.h * p->animFlip;
-  if(p->srcrect.y >= p->yMax|| p->srcrect.y < 0){
-    p->animFlip = -p->animFlip;
+void animer_perso(Perso *p, Perso *joueur, SDL_Texture **sprites){
+  if(p->tir){
+    if(p->srcrect.w != 318){
+      p->image = sprites[2];
+      p->pos.w = 60;
+      p->pos.h = 60;
+      p->srcrect.w = 318;
+      p->srcrect.h = 294;
+      p->srcrect.y = 0;
+      p->yMax = 2646;
+      p->animFlip = 1;
+    } else {
+      p->srcrect.y += p->srcrect.h * p->animFlip;
+      if(p->srcrect.y == p->srcrect.h * 6){
+        if(joueur->vie < p->degats){
+          joueur->vie = 0;
+        }else {
+          joueur->vie -= p->degats;
+        }
+      } else if(p->srcrect.y == p->yMax){
+        p->image = sprites[1];
+        p->pos.w = 50;
+        p->pos.h = 50;
+        p->srcrect.w = 229;
+        p->srcrect.h = 259;
+        p->srcrect.y = 0;
+        p->yMax = 4403;
+        p->animFlip = 1;
+        p->tir = false;
+        p->vitesse = 2;
+      }
+    }
+
+  }
+
+  else {
     p->srcrect.y += p->srcrect.h * p->animFlip;
+    if((p->srcrect.y >= p->yMax || p->srcrect.y < 0) && !p->tir){
+      p->animFlip = -p->animFlip;
+      p->srcrect.y += p->srcrect.h * p->animFlip;
+    }
   }
   return;
 }
