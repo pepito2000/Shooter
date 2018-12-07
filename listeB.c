@@ -61,14 +61,15 @@ void afficher_listeB(SDL_Renderer *renderer, ListeB L) {
   }
 }
 
-ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int time, SDL_Texture *balleLongueJaune, int v, int xCamera, int yCamera, SDL_Texture **sprites){
+ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int time, SDL_Texture *balleLongueJaune, int v, int xCamera, int yCamera, SDL_Texture **sprites, Mix_Chunk **sons){
   //Si perso en train de tirer
   s_ListeP *tmp = LP;
   while(tmp != NULL){
     if(tmp->data.tir && tmp->data.ennemi == false){
       //On fait pop une nouvelle balle toutes les X ms
-      if(time > tmp->data.tempsTirPrecedent + 200) {
+      if(time > tmp->data.tempsTirPrecedent + 400) {
         cons_listeB(&LB, nouvelle_balle(balleLongueJaune, tmp->data.angle, tmp->data.degats, tmp->data.pos));
+        Mix_PlayChannel(1, sons[0], 0);
         tmp->data.tempsTirPrecedent = time;
       }
     }

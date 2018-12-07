@@ -18,19 +18,26 @@ int main(int argc, char *argv[])
     ListeR mursListe;
     ListeE effetsListe;
     Perso p, *joueur_ptr;
-
+    Mix_Music *musique;
+    Mix_Chunk *sons[2];
 
 
     //Initialisation SDL
-    if(SDL_Init(SDL_INIT_VIDEO < 0))
+    if(SDL_Init(SDL_INIT_EVERYTHING))
     {
       printf("Erreur d'initialisation de la SDL %s", SDL_GetError());
       SDL_Quit();
       return EXIT_FAILURE;
     }
 
-    //Initialisation SDL_image (PNG)
-    IMG_Init(IMG_INIT_PNG);
+    //Mix_Init(MIX_INIT_MP3);
+
+    if( Mix_OpenAudio(44100, AUDIO_S16, 1, 4096) < 0 )
+    {
+      printf("Erreur d'initialisation de la SDL %s", Mix_GetError() );
+      SDL_Quit();
+      return EXIT_FAILURE;
+    }
 
     //Création fenêtre
     fenetre = SDL_CreateWindow("gameName", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 700, SDL_WINDOW_RESIZABLE);
@@ -65,6 +72,11 @@ int main(int argc, char *argv[])
     sprites[2] = tmp;
     tmp = charger_image("sprites/effets/blood/blood_hitv3.png", ecran, 0, 0, -1);
     sprites[3] = tmp;
+
+    //Sons
+    musique = NULL;
+
+    charger_sons(&musique, &sons[0]);
 
     exit = false;
 
@@ -154,6 +166,11 @@ int main(int argc, char *argv[])
             }
           }
 
+          if( Mix_PlayingMusic() == 0 ) {
+            Mix_VolumeMusic(10);
+            Mix_FadeInMusic(musique, 1, 1000);
+          }
+
 
           joueur_ptr = joueur(persosListe);
           if(joueur_ptr != NULL){
@@ -182,7 +199,7 @@ int main(int argc, char *argv[])
 
           //Tir
           tempsActuelTir = SDL_GetTicks();
-          ballesTirees = tir_update(ballesTirees, persosListe, mursListe, &effetsListe, tempsActuelTir, balleSprite, vitesse, xCamera, yCamera, sprites);
+          ballesTirees = tir_update(ballesTirees, persosListe, mursListe, &effetsListe, tempsActuelTir, balleSprite, vitesse, xCamera, yCamera, sprites, &sons[0]);
 
           //Affichage
           SDL_RenderClear(ecran);
@@ -203,9 +220,11 @@ int main(int argc, char *argv[])
 
     //Nettoyage
     SDL_DestroyWindow(fenetre);
+    SDL_DestroyRenderer(ecran);
     SDL_DestroyTexture(balleSprite);;
     SDL_DestroyTexture(tmp);
-    IMG_Quit();
+    Mix_FreeMusic(musique);
+    Mix_CloseAudio();
     SDL_Quit();
     return EXIT_SUCCESS;
 }

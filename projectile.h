@@ -2,7 +2,10 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
+#include "son.h"
+
 #define PI 3.14159265359
+
 
 typedef struct s_Balle balle, s_Balle;
 struct s_Balle
