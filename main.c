@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
     SDL_Texture *tmp, *balleSprite, *sprites[4], *spritesMap[9];
     float mouseX, mouseY;
     int vitesse, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelAnim, tempsPrecedentAnim,
-        xCamera, yCamera, dxCamera, dyCamera, map[30][30]; ;
+        xCamera, yCamera, dxCamera, dyCamera;
+    char map[32][30]; ;
     ListeB ballesTirees;
     ListeP persosListe;
     ListeR mursListe;
@@ -72,6 +73,45 @@ int main(int argc, char *argv[])
     sprites[2] = tmp;
     tmp = charger_image("sprites/effets/blood/blood_hitv3.png", ecran, 0, 0, -1);
     sprites[3] = tmp;
+
+  /**
+  FILE* fichier = NULL;
+  fichier = fopen("map.txt", "r");
+  int caractereActuel;
+  if (fichier != NULL){
+
+         for(int j = 0; j < 33; j++){
+
+            for(int i = 0; i < 31; i++){
+                if(j < 31){
+
+                if(i==0){
+                    //caractereActuel = fgetc(fichier);
+                    caractereActuel = fgetc(fichier);
+                    char tmp = caractereActuel;
+                       //                 caractereActuel = fgetc(fichier);
+                    caractereActuel = tmp;
+
+
+                    map[j][i] = caractereActuel;
+                    printf("%c", map[j][i]);
+                }
+
+                else{
+                    caractereActuel = fgetc(fichier);
+                    map[j][i] = caractereActuel;
+                    printf("%c", map[j][i]);
+                }
+                }
+            }
+
+         }
+
+        fclose(fichier);
+  }
+  */
+
+
 
     //Sons
     musique = NULL;

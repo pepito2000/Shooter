@@ -11,5 +11,5 @@ struct s_ListeR
 
 
 void cons_listeR(ListeR *L, SDL_Rect data);
-void charger_niveau(int *tab, ListeR *L);
+void charger_niveau(char *tab, ListeR *L);
 bool detecter_collision_murs(ListeR L, SDL_Rect rect, int xCamera, int yCamera);

@@ -12,7 +12,8 @@ SDL_Texture* charger_image(const char* cheminFichier, SDL_Renderer* renderer, in
   return image;
 }
 
-void afficher_niveau(int *tab, SDL_Renderer *renderer, SDL_Texture **spriteMap, int xCamera, int yCamera){
+
+void afficher_niveau(char *tab, SDL_Renderer *renderer, SDL_Texture **spriteMap, int xCamera, int yCamera){
   SDL_Rect destrect;
   destrect.h = 50;
   destrect.w = 50;
@@ -21,11 +22,20 @@ void afficher_niveau(int *tab, SDL_Renderer *renderer, SDL_Texture **spriteMap, 
       destrect.x = i * 50 - xCamera;
       destrect.y = j * 50 - yCamera;
       SDL_RenderCopy(renderer, spriteMap[0], NULL, &destrect);
-      for(int k = 1; k < 9; k++){
-        if(tab[30*j+i] == k){
-          SDL_RenderCopy(renderer, spriteMap[k], NULL, &destrect);
-        }
+
+      switch(tab[30*j+i]){
+
+      case 'H':
+        SDL_RenderCopy(renderer, spriteMap[1], NULL, &destrect);
+        break;
+      case 'Q':
+        break;
+      case 'V':
+        SDL_RenderCopy(renderer, spriteMap[3], NULL, &destrect);
+        break;
       }
+
+
     }
   }
   return;
