@@ -5,15 +5,15 @@
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
-    bool gameover, tir, exit;
+    bool gameover, tir, exit, vagueTerminee;
     SDL_Window *fenetre;
     SDL_Event evenements;
     SDL_Renderer *ecran;
     SDL_Texture *tmp, *balleSprite, *sprites[4], *spritesMap[9];
     float mouseX, mouseY;
-    int vitesse, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelAnim, tempsPrecedentAnim,
-        xCamera, yCamera, dxCamera, dyCamera;
-    char map[32][30]; ;
+    int vitesse, vagueNum, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
+        tempsActuelAnim, tempsPrecedentAnim, xCamera, yCamera, dxCamera, dyCamera, vaguesEnnemis[100];
+    char map[62][60];
     ListeB ballesTirees;
     ListeP persosListe;
     ListeR mursListe;
@@ -31,9 +31,8 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
-    //Mix_Init(MIX_INIT_MP3);
 
-    if( Mix_OpenAudio(44100, AUDIO_S16, 1, 4096) < 0 )
+    if(Mix_OpenAudio(44100, AUDIO_S16, 1, 4096) < 0)
     {
       printf("Erreur d'initialisation de la SDL %s", Mix_GetError() );
       SDL_Quit();
@@ -74,44 +73,6 @@ int main(int argc, char *argv[])
     tmp = charger_image("sprites/effets/blood/blood_hitv3.png", ecran, 0, 0, -1);
     sprites[3] = tmp;
 
-  /**
-  FILE* fichier = NULL;
-  fichier = fopen("map.txt", "r");
-  int caractereActuel;
-  if (fichier != NULL){
-
-         for(int j = 0; j < 33; j++){
-
-            for(int i = 0; i < 31; i++){
-                if(j < 31){
-
-                if(i==0){
-                    //caractereActuel = fgetc(fichier);
-                    caractereActuel = fgetc(fichier);
-                    char tmp = caractereActuel;
-                       //                 caractereActuel = fgetc(fichier);
-                    caractereActuel = tmp;
-
-
-                    map[j][i] = caractereActuel;
-                    printf("%c", map[j][i]);
-                }
-
-                else{
-                    caractereActuel = fgetc(fichier);
-                    map[j][i] = caractereActuel;
-                    printf("%c", map[j][i]);
-                }
-                }
-            }
-
-         }
-
-        fclose(fichier);
-  }
-  */
-
-
 
     //Sons
     musique = NULL;
@@ -124,11 +85,15 @@ int main(int argc, char *argv[])
 
       gameover = false;
       tir = false;
+      vagueTerminee = false;
 
       vitesse = 25;
+      vagueNum = 0;
       tempsActuel = 0;
       tempsPrecedent = 0;
       tempsActuelTir = 0;
+      tempsActuelVague = 0;
+      tempsPrecedentVague = 0;
       tempsActuelAnim = 0;
       tempsPrecedentAnim = 0;
       xCamera = 0;
@@ -146,23 +111,15 @@ int main(int argc, char *argv[])
 
       p = nouveau_joueur(ecran, sprites);
       cons_listeP(&persosListe, p);
-      p = nouvel_ennemi_1(ecran, sprites);
-      cons_listeP(&persosListe, p);
-      p = nouvel_ennemi_1(ecran, sprites);
-      cons_listeP(&persosListe, p);
-      p = nouvel_ennemi_1(ecran, sprites);
-      cons_listeP(&persosListe, p);
-      p = nouvel_ennemi_1(ecran, sprites);
-      cons_listeP(&persosListe, p);
 
+      charger_vagues_ennemis(vaguesEnnemis);
 
 
       //Boucle de jeu
       while(!gameover)
       {
         tempsActuel = SDL_GetTicks();
-        if (tempsActuel > tempsPrecedent + 16)
-        {
+        if (tempsActuel > tempsPrecedent + 16) {
           //Détection événements
           while(SDL_PollEvent(&evenements))
           {
@@ -206,11 +163,31 @@ int main(int argc, char *argv[])
             }
           }
 
-          if( Mix_PlayingMusic() == 0 ) {
+          if(Mix_PlayingMusic() == 0) {
             Mix_VolumeMusic(10);
             Mix_FadeInMusic(musique, 1, 1000);
           }
 
+
+          tempsActuelVague = SDL_GetTicks();
+          if(!vagueTerminee){
+            if(tempsActuelVague > tempsPrecedentVague + 250){
+              charger_vague_ennemis(ecran, &vagueTerminee, vaguesEnnemis, vagueNum, xCamera, yCamera, &persosListe, sprites);
+              tempsPrecedentVague = tempsActuelVague;
+            }
+          } else {
+              if(vague_terminee(persosListe)){
+                if(tempsActuelVague > tempsPrecedentVague + 2000){
+                  vagueNum ++;
+                  tempsPrecedentVague = tempsActuelVague;
+                  vagueTerminee = false;
+                }
+              } else {
+                tempsPrecedentVague = tempsActuelVague;
+              }
+            }
+
+         // printf("vague %d\n",vagueNum);
 
           joueur_ptr = joueur(persosListe);
           if(joueur_ptr != NULL){

@@ -11,8 +11,15 @@ void cons_listeP(ListeP *L, Perso data){
 
 
 
-bool est_vide_listeP(ListeP L){
-  return (L == NULL);
+bool vague_terminee(ListeP L){
+  ListeP tmp = L;
+  while(tmp != NULL){
+    if(tmp->data.ennemi){
+      return false;
+    }
+    tmp = tmp->next;
+  }
+  return true;
 }
 
 void afficher_listeP(SDL_Renderer *renderer, ListeP L){
@@ -134,4 +141,14 @@ void animer_persos(ListeP L, SDL_Texture **sprites, Perso *joueur){
   return;
 }
 
+
+void charger_vague_ennemis(SDL_Renderer *renderer, bool *b, int *vaguesEnnemis, int vagueNum, int xCamera, int yCamera, ListeP *LP, SDL_Texture **sprites){
+  if(vaguesEnnemis[vagueNum] > 0){
+    cons_listeP(LP, nouvel_ennemi_1(renderer, sprites, xCamera, yCamera));
+    vaguesEnnemis[vagueNum] -= 1;
+  } else {
+    *b = true;
+  }
+  return;
+}
 

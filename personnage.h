@@ -27,8 +27,9 @@ struct s_Personnage
 
 
 Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites);
-Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites);
+Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites, int xCamera, int yCamera);
 void afficher_perso(SDL_Renderer *renderer, Perso p);
+void charger_vagues_ennemis(int *tab);
 void deplacement_joueur(Perso *p, ListeR L, int *xCamera, int *yCamera, int *dxCamera, int *dyCamera);
 void angle_ennemi(Perso *p);
 void angle_joueur(Perso *p, float mouseX, float mouseY);

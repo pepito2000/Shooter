@@ -12,7 +12,7 @@ balle nouvelle_balle(SDL_Texture *image, float angle, int degats, SDL_Rect perso
   return b;
 }
 
-//v = vitesse de la balle (provisoire)
+
 void incrementer_balle(balle *b, int v)
 {
   b->ballePos.x += round(cos(b->angle * PI / 180) * v);

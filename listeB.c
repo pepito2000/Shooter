@@ -67,7 +67,7 @@ ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int time, SDL_Tex
   while(tmp != NULL){
     if(tmp->data.tir && tmp->data.ennemi == false){
       //On fait pop une nouvelle balle toutes les X ms
-      if(time > tmp->data.tempsTirPrecedent + 400) {
+      if(time > tmp->data.tempsTirPrecedent + 50) {
         cons_listeB(&LB, nouvelle_balle(balleLongueJaune, tmp->data.angle, tmp->data.degats, tmp->data.pos));
         Mix_PlayChannel(1, sons[0], 0);
         tmp->data.tempsTirPrecedent = time;

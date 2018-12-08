@@ -18,97 +18,82 @@ void charger_niveau(char *tab, ListeR *L){
   int caractereActuel;
   if (fichier != NULL){
 
-         for(int j = 0; j < 33; j++){
+   for(int j = 0; j < 63; j++){
+      for(int i = 0; i < 61; i++){
+        if(j < 61){
+          if(i==0){
+              caractereActuel = fgetc(fichier);
+              char tmp = caractereActuel;
+              caractereActuel = tmp;
+              tab[60*j+i] = caractereActuel;
+              printf("%c", tab[60*j+i]);
+          }
+          else{
+              caractereActuel = fgetc(fichier);
+              tab[60*j+i] = caractereActuel;
+              printf("%c", tab[60*j+i]);
+          }
+        }
+      }
 
-            for(int i = 0; i < 31; i++){
-                if(j < 31){
+   }
 
-                if(i==0){
-                    //caractereActuel = fgetc(fichier);
-                    caractereActuel = fgetc(fichier);
-                    char tmp = caractereActuel;
-                       //                 caractereActuel = fgetc(fichier);
-                    caractereActuel = tmp;
-
-
-                    tab[30*j+i] = caractereActuel;
-                    printf("%c", tab[30*j+i]);
-                }
-
-                else{
-                    caractereActuel = fgetc(fichier);
-                    tab[30*j+i] = caractereActuel;
-                    printf("%c", tab[30*j+i]);
-                }
-                }
-            }
-
-         }
-
-        fclose(fichier);
+    fclose(fichier);
   }
 
   //Remplir la liste de murs
   SDL_Rect rect;
-  for(int j = 0; j < 30; j++){
-    for(int i = 0; i < 30; i++){
-      switch(tab[30*j+i]){
-      case 'S':
-
+  for(int j = 0; j < 60; j++){
+    for(int i = 0; i < 60; i++){
+      switch(tab[60*j+i]){
+      case '0':
         break;
-      case 'H':
+      case '1':
+        //mur du haut
         rect.x = i * 50;
         rect.y = j * 50;
         rect.h = 25;
         rect.w = 50;
         cons_listeR(L, rect);
-        //tab[30*j+i] = 1;
         break;
-      case 'V':
-        rect.x = i * 50;
-        rect.y = j * 50;
-        rect.h = 50;
-        rect.w = 25;
-        cons_listeR(L, rect);
-        //tab[30*j+i] = 3;
-        break;
-      /**
+        //mur du bas
       case '2':
         rect.x = i * 50;
         rect.y = j * 50 + 25;
         rect.h = 25;
         rect.w = 50;
-        L = cons_listeR(L, rect);
+        cons_listeR(L, rect);
         break;
       case '3':
+        //mur de gauche
         rect.x = i * 50;
         rect.y = j * 50;
         rect.h = 50;
         rect.w = 25;
-        L = cons_listeR(L, rect);
+        cons_listeR(L, rect);
         break;
       case '4':
+        //mur de droite
         rect.x = i * 50 + 25;
         rect.y = j * 50;
         rect.h = 50;
         rect.w = 25;
-        L = cons_listeR(L, rect);
+        cons_listeR(L, rect);
         break;
-
       case '5':
+        //coin haut gauche
       case '6':
+        //coin haut droit
       case '7':
+        //coin bas gauche
       case '8':
+        //coin bas droit
         rect.x = i * 50;
         rect.y = j * 50;
         rect.h = 50;
         rect.w = 50;
-        L = cons_listeR(L, rect);
+        cons_listeR(L, rect);
         break;
-      case '0':
-
-        break;
-       */
       }
     }
   }

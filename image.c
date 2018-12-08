@@ -17,21 +17,35 @@ void afficher_niveau(char *tab, SDL_Renderer *renderer, SDL_Texture **spriteMap,
   SDL_Rect destrect;
   destrect.h = 50;
   destrect.w = 50;
-  for(int j = 0; j < 30; j++){
-    for(int i = 0; i < 30; i++){
+  for(int j = 0; j < 60; j++){
+    for(int i = 0; i < 60; i++){
       destrect.x = i * 50 - xCamera;
       destrect.y = j * 50 - yCamera;
       SDL_RenderCopy(renderer, spriteMap[0], NULL, &destrect);
-
-      switch(tab[30*j+i]){
-
-      case 'H':
+      switch(tab[60*j+i]){
+      case '1':
         SDL_RenderCopy(renderer, spriteMap[1], NULL, &destrect);
         break;
-      case 'Q':
+      case '2':
+        SDL_RenderCopy(renderer, spriteMap[2], NULL, &destrect);
         break;
-      case 'V':
+      case '3':
         SDL_RenderCopy(renderer, spriteMap[3], NULL, &destrect);
+        break;
+      case '4':
+        SDL_RenderCopy(renderer, spriteMap[4], NULL, &destrect);
+        break;
+      case '5':
+        SDL_RenderCopy(renderer, spriteMap[5], NULL, &destrect);
+        break;
+      case '6':
+        SDL_RenderCopy(renderer, spriteMap[6], NULL, &destrect);
+        break;
+      case '7':
+        SDL_RenderCopy(renderer, spriteMap[7], NULL, &destrect);
+        break;
+      case '8':
+        SDL_RenderCopy(renderer, spriteMap[8], NULL, &destrect);
         break;
       }
 

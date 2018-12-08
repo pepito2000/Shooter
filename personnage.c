@@ -15,7 +15,7 @@ Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites){
   p.srcrect.h = 220;
   p.angle = 0;
   p.vie = 100;
-  p.degats = 25;
+  p.degats = 100;
   p.vitesse = 4;
   p.yMax = 0;
   p.tir = false;
@@ -24,13 +24,20 @@ Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites){
   return p;
 }
 
-Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites){
+Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites, int xCamera, int yCamera){
   Perso p;
   p.tempsTirPrecedent = 0;
   p.image = sprites[1];
-  //génère des coordonnées de spawn aléatoires(provisoire)
-  p.pos.x = rand()%100 + 0;
-  p.pos.y = rand()%700 + 0;
+  //génère des coordonnées de spawn aléatoires hors du champ de vision du joueur
+  int x, y;
+  do {
+    x = (rand()%1424 + 26) - xCamera;
+  } while(x > 0 && x < 1000);
+  do {
+    y = (rand()%1424 + 26) - yCamera;
+  } while(y > 0 && y < 700);
+  p.pos.x = x;
+  p.pos.y = y;
   p.pos.w = 50;
   p.pos.h = 50;
   p.srcrect.x = 0;
@@ -48,10 +55,20 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites){
   return p;
 }
 
-void afficher_perso(SDL_Renderer *renderer, Perso p)
-{
+void afficher_perso(SDL_Renderer *renderer, Perso p) {
   SDL_RenderCopyEx(renderer, p.image, &p.srcrect, &p.pos, p.angle, NULL, SDL_FLIP_NONE);
+  return;
 }
+
+
+void charger_vagues_ennemis(int *tab){
+  for(int j = 0; j < 100; j++){
+    tab[j] = 3*j + 1;
+  }
+
+  return;
+}
+
 
 void deplacement_joueur(Perso *p, ListeR L, int *xCamera, int *yCamera, int *dxCamera, int *dyCamera)
 {
