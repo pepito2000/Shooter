@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     SDL_Window *fenetre;
     SDL_Event evenements;
     SDL_Renderer *ecran;
-    SDL_Texture *tmp, *balleSprite, *sprites[4], *spritesMap[9];
+    SDL_Texture *tmp, *balleSprite, *sprites[5], *spritesMap[20];
     float mouseX, mouseY;
     int vitesse, vagueNum, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
         tempsActuelAnim, tempsPrecedentAnim, xCamera, yCamera, dxCamera, dyCamera, vaguesEnnemis[100];
@@ -62,9 +62,20 @@ int main(int argc, char *argv[])
     spritesMap[6] = charger_image("sprites/map/mur_hd.png", ecran, 255, 255, 255);
     spritesMap[7] = charger_image("sprites/map/mur_bg.png", ecran, 255, 255, 255);
     spritesMap[8] = charger_image("sprites/map/mur_bd.png", ecran, 255, 255, 255);
+    spritesMap[9] = charger_image("sprites/map/route_ver.png", ecran, 0, 0, -1);
+    spritesMap[10] = charger_image("sprites/map/route_hor.png", ecran, 0, 0, -1);
+    spritesMap[11] = charger_image("sprites/map/police_car.png", ecran, 0, 0, -1);
+    spritesMap[12] = charger_image("sprites/map/ambulance.png", ecran, 0, 0, -1);
+    spritesMap[13] = charger_image("sprites/map/eau.png", ecran, 0, 0, -1);
+    spritesMap[14] = charger_image("sprites/map/conteneurs.png", ecran, 0, 0, -1);
+    spritesMap[15] = charger_image("sprites/map/maison2.png", ecran, 0, 0, -1);
+    spritesMap[16] = charger_image("sprites/map/maison.png", ecran, 0, 0, -1);
+    spritesMap[17] = charger_image("sprites/map/herbe.png", ecran, 0, 0, -1);
+    spritesMap[18] = charger_image("sprites/map/maison3.png", ecran, 0, 0, -1);
+    spritesMap[19] = charger_image("sprites/map/fontaine.png", ecran, 0, 0, -1);
 
     //Personnages + Effets
-    tmp = charger_image("sprites/perso/handgun/idle/survivor_idle.png", ecran, 255, 255, 255);
+    tmp = charger_image("sprites/perso/survivor_rifle.png", ecran, 255, 255, 255);
     sprites[0] = tmp;
     tmp = charger_image("sprites/ennemis/zombie/move/zombie_moveV2.png", ecran, 0, 0, -1);
     sprites[1] = tmp;
@@ -72,6 +83,8 @@ int main(int argc, char *argv[])
     sprites[2] = tmp;
     tmp = charger_image("sprites/effets/blood/blood_hitv3.png", ecran, 0, 0, -1);
     sprites[3] = tmp;
+    tmp = charger_image("sprites/effets/blood/blood_splatter.png", ecran, 255, 255, 255);
+    sprites[4] = tmp;
 
 
     //Sons
@@ -164,7 +177,7 @@ int main(int argc, char *argv[])
           }
 
           if(Mix_PlayingMusic() == 0) {
-            Mix_VolumeMusic(10);
+            Mix_VolumeMusic(20);
             Mix_FadeInMusic(musique, 1, 1000);
           }
 
@@ -172,7 +185,7 @@ int main(int argc, char *argv[])
           tempsActuelVague = SDL_GetTicks();
           if(!vagueTerminee){
             if(tempsActuelVague > tempsPrecedentVague + 250){
-              charger_vague_ennemis(ecran, &vagueTerminee, vaguesEnnemis, vagueNum, xCamera, yCamera, &persosListe, sprites);
+              charger_vague_ennemis(ecran, &vagueTerminee, vaguesEnnemis, vagueNum, xCamera, yCamera, &persosListe, mursListe, sprites);
               tempsPrecedentVague = tempsActuelVague;
             }
           } else {
@@ -187,7 +200,7 @@ int main(int argc, char *argv[])
               }
             }
 
-         // printf("vague %d\n",vagueNum);
+
 
           joueur_ptr = joueur(persosListe);
           if(joueur_ptr != NULL){
@@ -212,7 +225,7 @@ int main(int argc, char *argv[])
 
 
           //Déplacement/angle de tir ennemis
-          deplacement_ennemis(persosListe, xCamera, yCamera, dxCamera, dyCamera);
+          deplacement_ennemis(persosListe, mursListe, &effetsListe, sprites, xCamera, yCamera, dxCamera, dyCamera);
 
           //Tir
           tempsActuelTir = SDL_GetTicks();
@@ -238,7 +251,7 @@ int main(int argc, char *argv[])
     //Nettoyage
     SDL_DestroyWindow(fenetre);
     SDL_DestroyRenderer(ecran);
-    SDL_DestroyTexture(balleSprite);;
+    SDL_DestroyTexture(balleSprite);
     SDL_DestroyTexture(tmp);
     Mix_FreeMusic(musique);
     Mix_CloseAudio();

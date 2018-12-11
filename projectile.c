@@ -20,7 +20,6 @@ void incrementer_balle(balle *b, int v)
 }
 
 
-
 void afficher_balle(SDL_Renderer *renderer, balle b)
 {
   SDL_RenderCopyEx(renderer, b.image, NULL, &b.ballePos, b.angle, NULL, SDL_FLIP_NONE);

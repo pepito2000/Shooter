@@ -7,39 +7,45 @@ Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites){
   p.image = sprites[0];
   p.pos.x = 480;
   p.pos.y = 330;
-  p.pos.w = 40;
-  p.pos.h = 40;
+  p.pos.w = 50;
+  p.pos.h = 35;
   p.srcrect.x = 0;
   p.srcrect.y = 0;
   p.srcrect.w = 258;
   p.srcrect.h = 220;
   p.angle = 0;
   p.vie = 100;
-  p.degats = 100;
+  p.degats = 25;
   p.vitesse = 4;
   p.yMax = 0;
   p.tir = false;
   p.ennemi = false;
+  p.collision = 0;
   p.animFlip = 1;
   return p;
 }
 
-Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites, int xCamera, int yCamera){
+Perso nouvel_ennemi_1(SDL_Renderer *renderer, ListeR LR, SDL_Texture **sprites, int xCamera, int yCamera){
   Perso p;
   p.tempsTirPrecedent = 0;
   p.image = sprites[1];
-  //génère des coordonnées de spawn aléatoires hors du champ de vision du joueur
-  int x, y;
-  do {
-    x = (rand()%1424 + 26) - xCamera;
-  } while(x > 0 && x < 1000);
-  do {
-    y = (rand()%1424 + 26) - yCamera;
-  } while(y > 0 && y < 700);
-  p.pos.x = x;
-  p.pos.y = y;
   p.pos.w = 50;
   p.pos.h = 50;
+  //génère des coordonnées de spawn aléatoires hors du champ de vision du joueur et hors des hitbox
+  int x, y;
+  do {
+    do {
+      x = (rand()%2950 + 0) - xCamera;
+    } while(x > 0 && x < 1000);
+    do {
+      y = (rand()%2950 + 26) - yCamera;
+    } while(y > 0 && y < 700);
+    p.pos.x = x;
+    p.pos.y = y;
+  } while(detecter_collision_murs(LR, p.pos, xCamera, yCamera));
+
+
+
   p.srcrect.x = 0;
   p.srcrect.y = 0;
   p.srcrect.w = 229;
@@ -51,6 +57,7 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, SDL_Texture **sprites, int xCamera
   p.yMax = 4403;
   p.tir = false;
   p.ennemi = true;
+  p.collision = 0;
   p.animFlip = 1;
   return p;
 }
@@ -62,8 +69,13 @@ void afficher_perso(SDL_Renderer *renderer, Perso p) {
 
 
 void charger_vagues_ennemis(int *tab){
-  for(int j = 0; j < 100; j++){
-    tab[j] = 3*j + 1;
+  int n = 1;
+  for(int j = 1; j < 101; j++){
+    if(j%5 == 0 ){
+      n += 1;
+    }
+    tab[j-1] = j * n;
+    printf("%d  %d\n",j-1,j*n);
   }
 
   return;
@@ -127,6 +139,7 @@ void angle_joueur(Perso *p, float mouseX, float mouseY){
   float angle;
   angle = atan2(mouseY - (p->pos.y + 20), mouseX - (p->pos.x + 20));
   angle = (angle * 180.0000)/PI;
+  angle -= 1;
   p->angle = angle;
   return;
 }
@@ -182,5 +195,33 @@ void animer_perso(Perso *p, Perso *joueur, SDL_Texture **sprites){
   }
   return;
 }
+
+
+void detecter_collision_murs_ennemis(ListeR L, Perso *p, int xCamera, int yCamera){
+  int ax1, ax2, bx1, bx2, ay1, ay2, by1, by2;
+  while(L != NULL){
+    ax1 = p->pos.x + xCamera;
+    ax2 = p->pos.x + p->pos.w + xCamera;
+    bx1 = L->data.x;
+    bx2 = L->data.x + L->data.w;
+    ay1 = p->pos.y + yCamera;
+    ay2 = p->pos.y + p->pos.h + yCamera;
+    by1 = L->data.y;
+    by2 = L->data.y + L->data.h;
+
+    if(ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1){
+      if((ax1 + p->vitesse) >= bx2 || (ax2 - p->vitesse) <= bx1){
+        p->collision = 1;
+      } else if((ay1 + p->vitesse) >= by2 || (ay2 - p->vitesse) <= by1){
+        p->collision = 2;
+      }
+      return;
+    }
+    L = L->next;
+  }
+  p->collision = 0;
+  return;
+}
+
 
 

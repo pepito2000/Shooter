@@ -42,59 +42,94 @@ Perso* joueur(ListeP L){
   return NULL;
 }
 
-void deplacement_ennemi(Perso *p, Perso *joueur, int xCamera, int yCamera, int dxCamera, int dyCamera){
-
-  int dX = 0;
-  int dY = 0;
+void deplacement_ennemi(Perso *p, ListeR LR, Perso *joueur, int xCamera, int yCamera, int dxCamera, int dyCamera){
 
   if(p != NULL){
     if(p->ennemi){
-      //Màj de la direction du perso
       angle_ennemi(p);
-      //Compensation du décalage de la caméra + ajout du déplacement
-      dX = p->pos.x + round(-dxCamera + cos(p->angle) * p->vitesse);
-      dY = p->pos.y + round(-dyCamera + sin(p->angle) * p->vitesse);
-      //if(!detecter_collision_avec_joueur(p, joueur)){
-        detecter_collision_avec_joueur(p, joueur);
-        p->pos.x = dX;
-        p->pos.y = dY;
-    //  }
 
+      if(p->collision == 0){
+        detecter_collision_murs_ennemis(LR, p, xCamera, yCamera);
+        p->pos.x = p->pos.x + round(-dxCamera + cos(p->angle) * p->vitesse);
+        p->pos.y = p->pos.y + round(-dyCamera + sin(p->angle) * p->vitesse);
+      } if(p->collision == 1){
+        if(joueur->pos.y - p->pos.y < 0){
+          p->pos.y -= p->vitesse;
+        } else{
+          p->pos.y += p->vitesse;
+        }
+        p->pos.x -= dxCamera;
+        p->pos.y -= dyCamera;
+        if(!detecter_collision_murs(LR, p->pos, xCamera, yCamera)){
+          p->collision = 0;
+        }
+      } if(p->collision == 2){
+        if(joueur->pos.x - p->pos.x < 0){
+          p->pos.x -= p->vitesse;
+        } else{
+          p->pos.x += p->vitesse;
+        }
+        p->pos.x -= dxCamera;
+        p->pos.y -= dyCamera;
+        if(!detecter_collision_murs(LR, p->pos, xCamera, yCamera)){
+          p->collision = 0;
+        }
+      }
+      detecter_collision_avec_joueur(p, joueur);
       p->angle = (p->angle * 180.0000)/PI;
     }
   }
   return;
+
 }
 
-void deplacement_ennemis(ListeP L, int xCamera, int yCamera, int dxCamera, int dyCamera){
-  Perso *joueur_ptr = joueur(L);
-  while(L != NULL){
-    if(L->data.vie <= 0 && L->data.ennemi){
-      *L = *L->next;
-      L = L->next;
+void deplacement_ennemis(ListeP LP, ListeR LR, ListeE *LE, SDL_Texture **sprites, int xCamera, int yCamera, int dxCamera, int dyCamera){
+  Perso *joueur_ptr = joueur(LP);
+  while(LP != NULL){
+    if(LP->data.vie <= 0 && LP->data.ennemi){
+      Effet e;
+      e = nouvel_effet_bloodSplatter(sprites, LP->data.pos, LP->data.angle);
+      cons_listeE(LE, e);
+      *LP = *LP->next;
+      LP = LP->next;
     } else {
-      deplacement_ennemi(&L->data, joueur_ptr, xCamera, yCamera, dxCamera, dyCamera);
-
-      L = L->next;
+      deplacement_ennemi(&LP->data, LR, joueur_ptr, xCamera, yCamera, dxCamera, dyCamera);
+      LP = LP->next;
     }
   }
   return;
 }
 
-bool detecter_collision_perso(ListeP L, ListeE *LE, SDL_Rect rect, int degats, int xCamera, int yCamera, SDL_Texture **sprites){
+bool detecter_collision_perso(ListeP L, ListeE *LE, SDL_Rect rect, int angle, int degats, int xCamera, int yCamera, SDL_Texture **sprites){
 
   int ax1, ax2, bx1, bx2, ay1, ay2, by1, by2;
   Effet e;
 
   while(L != NULL){
     ax1 = rect.x;
-    ax2 = rect.x + rect.w ;
-    bx1 = L->data.pos.x - 0.3 * L->data.pos.w;
-    bx2 = L->data.pos.x + 0.6 * L->data.pos.w;
+    ax2 = rect.x + rect.w;
+    bx1 = L->data.pos.x ;
+    bx2 = L->data.pos.x + L->data.pos.w;
     ay1 = rect.y;
-    ay2 = rect.y;
-    by1 = L->data.pos.y - 0.3 * L->data.pos.h;
-    by2 = L->data.pos.y + 0.6 * L->data.pos.h;
+    ay2 = rect.y + rect.h;
+    by1 = L->data.pos.y;
+    by2 = L->data.pos.y + L->data.pos.h;
+    //correction hitbox
+    if(angle >= -45 && angle < 45){
+      by1 -= 0.6 * L->data.pos.h;
+      by2 -= 0.6 * L->data.pos.h;
+    } else if(angle >= 45 && angle < 135){
+      bx1 -= 0.1 * L->data.pos.w;
+      bx2 -= 0.2 * L->data.pos.w;
+    } else if(angle >= -135 && angle < -45){
+      bx1 -= 0.4 * L->data.pos.w;
+      bx2 -= 0.6 * L->data.pos.w;
+      by2 -= 0.5 * L->data.pos.h;
+    } else {
+      by1 -= 0.1 * L->data.pos.h;
+      by2 -= 0.3 * L->data.pos.h;
+      bx2 -= 0.5 * L->data.pos.w;
+    }
 
     if(ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1 && L->data.ennemi){
       L->data.vie -= degats;
@@ -142,9 +177,9 @@ void animer_persos(ListeP L, SDL_Texture **sprites, Perso *joueur){
 }
 
 
-void charger_vague_ennemis(SDL_Renderer *renderer, bool *b, int *vaguesEnnemis, int vagueNum, int xCamera, int yCamera, ListeP *LP, SDL_Texture **sprites){
+void charger_vague_ennemis(SDL_Renderer *renderer, bool *b, int *vaguesEnnemis, int vagueNum, int xCamera, int yCamera, ListeP *LP, ListeR LR,SDL_Texture **sprites){
   if(vaguesEnnemis[vagueNum] > 0){
-    cons_listeP(LP, nouvel_ennemi_1(renderer, sprites, xCamera, yCamera));
+    cons_listeP(LP, nouvel_ennemi_1(renderer, LR, sprites, xCamera, yCamera));
     vaguesEnnemis[vagueNum] -= 1;
   } else {
     *b = true;

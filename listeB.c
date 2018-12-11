@@ -35,12 +35,13 @@ ListeB incrementer_balles(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int v, in
     return incrementer_balles(LB, LP, LR, LE, v, xCamera, yCamera, sprites);
   }
 
-  ballePos.w = 6;
-  ballePos.h = 6;
-  ballePos.x = LB->data.ballePos.x - 3;
-  ballePos.y = LB->data.ballePos.y - 3;
+  ballePos.w = 2;
+  ballePos.h = 2;
+  ballePos.x = LB->data.ballePos.x;
+  ballePos.y = LB->data.ballePos.y;
 
-  if(detecter_collision_perso(LP, LE, ballePos, LB->data.degats ,xCamera, yCamera, sprites)) {
+
+  if(detecter_collision_perso(LP, LE, ballePos, LB->data.angle, LB->data.degats, xCamera, yCamera, sprites)) {
     LB = LB->next;
     return incrementer_balles(LB, LP, LR, LE, v, xCamera, yCamera, sprites);
   }
@@ -67,7 +68,7 @@ ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int time, SDL_Tex
   while(tmp != NULL){
     if(tmp->data.tir && tmp->data.ennemi == false){
       //On fait pop une nouvelle balle toutes les X ms
-      if(time > tmp->data.tempsTirPrecedent + 50) {
+      if(time > tmp->data.tempsTirPrecedent + 80) {
         cons_listeB(&LB, nouvelle_balle(balleLongueJaune, tmp->data.angle, tmp->data.degats, tmp->data.pos));
         Mix_PlayChannel(1, sons[0], 0);
         tmp->data.tempsTirPrecedent = time;
