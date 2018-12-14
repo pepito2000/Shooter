@@ -7,7 +7,6 @@
 #define PI 3.14159265359
 
 
-
 typedef struct s_Personnage Perso;
 struct s_Personnage
 {
@@ -21,9 +20,10 @@ struct s_Personnage
   int vitesse;
   int animFlip;
   int yMax;
+  int arme;
+  int collision;
   bool tir;
   bool ennemi;
-  int collision;
 };
 
 
@@ -36,3 +36,4 @@ void angle_ennemi(Perso *p);
 void angle_joueur(Perso *p, float mouseX, float mouseY);
 void animer_perso(Perso *p, Perso *joueur, SDL_Texture **sprites);
 void detecter_collision_murs_ennemis(ListeR L, Perso *p, int xCamera, int yCamera);
+void changer_arme_joueur(Perso *p, int arme, SDL_Texture **sprites);

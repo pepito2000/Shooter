@@ -20,7 +20,7 @@ Perso* joueur(ListeP L);
 void supprimer_ennemi(ListeP L);
 void deplacement_ennemi(Perso *p, ListeR LR, Perso *joueur, int xCamera, int yCamera, int dxCamera, int dyCamera);
 void deplacement_ennemis(ListeP LP, ListeR LR, ListeE *LE, SDL_Texture **sprites, int xCamera, int yCamera, int dxCamera, int dyCamera);
-bool detecter_collision_perso(ListeP L, ListeE *LE, SDL_Rect rect, int angle, int degats, int xCamera, int yCamera, SDL_Texture **sprites);
+bool detecter_collision_perso(ListeP L, ListeE *LE, SDL_Rect rect, int angle, int degats, int xCamera, int yCamera, int *nbTues, SDL_Texture **sprites);
 void detecter_collision_avec_joueur(Perso *p, Perso *joueur);
 void animer_persos(ListeP L, SDL_Texture **sprites, Perso *joueur);
 void charger_vague_ennemis(SDL_Renderer *renderer, bool *b, int *vaguesEnnemis, int vagueNum,int xCamera, int yCamera, ListeP *LP, ListeR LR, SDL_Texture **sprites);

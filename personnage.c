@@ -5,19 +5,19 @@ Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites){
   Perso p;
   p.tempsTirPrecedent = 0;
   p.image = sprites[0];
-  p.pos.x = 480;
-  p.pos.y = 330;
-  p.pos.w = 50;
-  p.pos.h = 35;
+  p.pos.x = 465;
+  p.pos.y = 335;
+  p.pos.w = 70;
+  p.pos.h = 30;
   p.srcrect.x = 0;
   p.srcrect.y = 0;
-  p.srcrect.w = 258;
-  p.srcrect.h = 220;
+  p.srcrect.w = 395;
+  p.srcrect.h = 151;
   p.angle = 0;
   p.vie = 100;
-  p.degats = 25;
   p.vitesse = 4;
   p.yMax = 0;
+  p.arme = 0;
   p.tir = false;
   p.ennemi = false;
   p.collision = 0;
@@ -31,7 +31,6 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, ListeR LR, SDL_Texture **sprites, 
   p.image = sprites[1];
   p.pos.w = 50;
   p.pos.h = 50;
-  //génère des coordonnées de spawn aléatoires hors du champ de vision du joueur et hors des hitbox
   int x, y;
   do {
     do {
@@ -44,8 +43,6 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, ListeR LR, SDL_Texture **sprites, 
     p.pos.y = y;
   } while(detecter_collision_murs(LR, p.pos, xCamera, yCamera));
 
-
-
   p.srcrect.x = 0;
   p.srcrect.y = 0;
   p.srcrect.w = 229;
@@ -55,6 +52,7 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, ListeR LR, SDL_Texture **sprites, 
   p.degats = 10;
   p.vitesse = 2;
   p.yMax = 4403;
+  p.arme = -1;
   p.tir = false;
   p.ennemi = true;
   p.collision = 0;
@@ -115,16 +113,20 @@ void deplacement_joueur(Perso *p, ListeR L, int *xCamera, int *yCamera, int *dxC
   *dxCamera = dX;
   *dyCamera = dY;
 
-
-  if(detecter_collision_murs(L, p->pos, *xCamera, *yCamera)){
+  SDL_Rect pos = p->pos;
+  pos.x += 15;
+  pos.w -= 30;
+  pos.y -= 3;
+  pos.h += 10;
+  if(detecter_collision_murs(L, pos, *xCamera, *yCamera)){
     *xCamera -= dX;
     *dxCamera = 0;
-    if(detecter_collision_murs(L, p->pos, *xCamera, *yCamera)){
+    if(detecter_collision_murs(L, pos, *xCamera, *yCamera)){
       *xCamera += dX;
       *dxCamera = dX;
       *yCamera -= dY;
       *dyCamera = 0;
-      if(detecter_collision_murs(L, p->pos, *xCamera, *yCamera)){
+      if(detecter_collision_murs(L, pos, *xCamera, *yCamera)){
         *xCamera -= dX;
         *dxCamera = 0;
       }
@@ -137,16 +139,16 @@ void deplacement_joueur(Perso *p, ListeR L, int *xCamera, int *yCamera, int *dxC
 
 void angle_joueur(Perso *p, float mouseX, float mouseY){
   float angle;
-  angle = atan2(mouseY - (p->pos.y + 20), mouseX - (p->pos.x + 20));
+  angle = atan2(mouseY - (p->pos.y + p->pos.h/2), mouseX - (p->pos.x + p->pos.w/2));
   angle = (angle * 180.0000)/PI;
-  angle -= 1;
+  angle -= 2;
   p->angle = angle;
   return;
 }
 
 void angle_ennemi(Perso *p){
   float angle;
-  angle = atan2(350 - (p->pos.y + 20), 500 - (p->pos.x + 20));
+  angle = atan2(350 - (p->pos.y + 25), 500 - (p->pos.x + 25));
   p->angle = angle;
   return;
 }
@@ -224,4 +226,20 @@ void detecter_collision_murs_ennemis(ListeR L, Perso *p, int xCamera, int yCamer
 }
 
 
-
+void changer_arme_joueur(Perso *p, int arme, SDL_Texture **sprites){
+  switch(arme){
+  case 0:
+    p->image = sprites[0];
+    p->tempsTirPrecedent = 0;
+    break;
+  case 1:
+    p->image = sprites[10];
+    p->tempsTirPrecedent = 0;
+    break;
+  case 2:
+    p->image = sprites[11];
+    p->tempsTirPrecedent = 0;
+    break;
+  }
+  return;
+}
