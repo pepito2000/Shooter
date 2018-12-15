@@ -14,7 +14,7 @@ Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites){
   p.srcrect.w = 395;
   p.srcrect.h = 151;
   p.angle = 0;
-  p.vie = 100;
+  p.vie = 20;
   p.vitesse = 4;
   p.yMax = 0;
   p.arme = 0;

@@ -1,5 +1,6 @@
 #include "image.h"
 #include "listeB.h"
+#include "SDL2/SDL_ttf.h"
 
 
 int main(int argc, char *argv[])
@@ -11,7 +12,7 @@ int main(int argc, char *argv[])
     SDL_Renderer *ecran;
     SDL_Texture *sprites[12], *spritesMap[20];
     float mouseX, mouseY;
-    int vitesse, vagueNum, nbTues, arme, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
+    int vitesse, vagueNum, nbTues = 0, arme, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
         tempsActuelAnim, tempsPrecedentAnim, xCamera, yCamera, dxCamera, dyCamera, vaguesEnnemis[100];
     char map[62][60];
     ListeB ballesTirees;
@@ -39,6 +40,12 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
+    if(TTF_Init() == -1)
+    {
+    fprintf(stderr, "Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
+    return (EXIT_FAILURE);
+    }
+
     //Création fenêtre
     fenetre = SDL_CreateWindow("gameName", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 700, SDL_WINDOW_RESIZABLE);
     if(fenetre == NULL)
@@ -49,6 +56,36 @@ int main(int argc, char *argv[])
 
     //Création renderer
     ecran = SDL_CreateRenderer(fenetre, -1, SDL_RENDERER_ACCELERATED);
+
+    //Initialisation texte
+    SDL_Color couleur = {255, 20, 20};
+    SDL_Rect postext;
+    postext.x = 810;
+    postext.y = 0;
+    postext.w = 180;
+    postext.h = 50;
+    SDL_Rect postext2;
+    postext2.x = 0;
+    postext2.y = 0;
+    postext2.w = 150;
+    postext2.h = 50;
+    SDL_Rect postext3;
+    postext3.x = 370;
+    postext3.y = 350;
+    postext3.w = 300;
+    postext3.h = 100;
+    TTF_Font *police =  NULL;
+    police = TTF_OpenFont("RAVIE.ttf", 100);
+    if(police == NULL)
+        return false;
+
+    SDL_Surface *pSurf;
+    SDL_Texture *text;
+    SDL_Surface *pSurf2;
+    SDL_Texture *text2;
+
+
+
 
     //Chargement images
     //Murs + Sols
@@ -238,7 +275,25 @@ int main(int argc, char *argv[])
 
           //Détection mort joueur
           if(joueur_ptr->vie <= 0){
+            SDL_Surface *pSurf3 = TTF_RenderText_Blended(police, "GameOver", couleur);
+            SDL_Texture *text3 = SDL_CreateTextureFromSurface(ecran, pSurf3);
+            SDL_RenderCopy(ecran, text3, NULL, &postext3);
             gameover = true;
+          }
+          else{
+            char sc[10];
+            char score[] = "Score : ";
+            char pv[10];
+            char vie[] = "Vie : ";
+            sprintf(sc, "%d", nbTues);
+            strcat(score, sc);
+            sprintf(pv, "%d", joueur_ptr->vie);
+            strcat(vie, pv);
+            pSurf = TTF_RenderText_Blended(police, score, couleur); ////
+            text = SDL_CreateTextureFromSurface(ecran, pSurf);
+            pSurf2 = TTF_RenderText_Blended(police, vie, couleur);
+            text2 = SDL_CreateTextureFromSurface(ecran, pSurf2);
+
           }
 
           //Déplacement/angle de tir ennemis
@@ -248,12 +303,16 @@ int main(int argc, char *argv[])
           tempsActuelTir = SDL_GetTicks();
           ballesTirees = tir_update(ballesTirees, persosListe, mursListe, &effetsListe, tempsActuelTir, vitesse, xCamera, yCamera, &nbTues, sprites, &sons[0]);
 
+
+
           //Affichage
           SDL_RenderClear(ecran);
           afficher_niveau(map[0], ecran, spritesMap, xCamera, yCamera);
           afficher_listeE(ecran, effetsListe, dxCamera, dyCamera);
           afficher_listeP(ecran, persosListe);
           afficher_listeB(ecran, ballesTirees);
+          SDL_RenderCopy(ecran, text, NULL, &postext);
+          SDL_RenderCopy(ecran, text2, NULL, &postext2);
           SDL_RenderPresent(ecran);
 
           tempsPrecedent = tempsActuel;
