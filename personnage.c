@@ -49,8 +49,8 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, ListeR LR, SDL_Texture **sprites, 
   p.srcrect.h = 259;
   p.angle = 0;
   p.vie = 100;
-  p.degats = 10;
-  p.vitesse = 2;
+  p.degats = 5;
+  p.vitesse = 3;
   p.yMax = 4403;
   p.arme = -1;
   p.tir = false;

@@ -79,7 +79,7 @@ ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int time, int v, 
       switch(arme){
       case 0:
         if(time > tmp->data.tempsTirPrecedent + 300){
-          cons_listeB(&LB, nouvelle_balle(sprites[7], tmp->data.angle, 25, tmp->data.pos));
+          cons_listeB(&LB, nouvelle_balle(sprites[7], tmp->data.angle, 50, tmp->data.pos));
           Mix_PlayChannel(1, sons[0], 0);
           tmp->data.tempsTirPrecedent = time;
         }
