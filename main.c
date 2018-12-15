@@ -5,13 +5,13 @@
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
-    bool gameover, tir, exit, vagueTerminee;
+    bool gameover, tir, exit, switchArme, vagueTerminee;
     SDL_Window *fenetre;
     SDL_Event evenements;
     SDL_Renderer *ecran;
-    SDL_Texture *tmp, *balleSprite, *sprites[5], *spritesMap[20];
+    SDL_Texture *sprites[12], *spritesMap[20];
     float mouseX, mouseY;
-    int vitesse, vagueNum, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
+    int vitesse, vagueNum, nbTues, arme, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
         tempsActuelAnim, tempsPrecedentAnim, xCamera, yCamera, dxCamera, dyCamera, vaguesEnnemis[100];
     char map[62][60];
     ListeB ballesTirees;
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     ListeE effetsListe;
     Perso p, *joueur_ptr;
     Mix_Music *musique;
-    Mix_Chunk *sons[2];
+    Mix_Chunk *sons[3];
 
 
     //Initialisation SDL
@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
     ecran = SDL_CreateRenderer(fenetre, -1, SDL_RENDERER_ACCELERATED);
 
     //Chargement images
-    balleSprite = charger_image("sprites/projectiles/balle/balle_longue_jaune.png", ecran, 255, 255, 255);
     //Murs + Sols
     spritesMap[0] = charger_image("sprites/map/sol.png", ecran, 0, 0, -1);
     spritesMap[1] = charger_image("sprites/map/mur_h.png", ecran, 255, 255, 255);
@@ -75,17 +74,18 @@ int main(int argc, char *argv[])
     spritesMap[19] = charger_image("sprites/map/fontaine.png", ecran, 0, 0, -1);
 
     //Personnages + Effets
-    tmp = charger_image("sprites/perso/survivor_rifle.png", ecran, 255, 255, 255);
-    sprites[0] = tmp;
-    tmp = charger_image("sprites/ennemis/zombie/move/zombie_moveV2.png", ecran, 0, 0, -1);
-    sprites[1] = tmp;
-    tmp = charger_image("sprites/ennemis/zombie/attack/zombie_attack.png", ecran, 0, 0, -1);
-    sprites[2] = tmp;
-    tmp = charger_image("sprites/effets/blood/blood_hitv3.png", ecran, 0, 0, -1);
-    sprites[3] = tmp;
-    tmp = charger_image("sprites/effets/blood/blood_splatter.png", ecran, 255, 255, 255);
-    sprites[4] = tmp;
-
+    sprites[0] = charger_image("sprites/perso/survivor_handgun.png", ecran, 255, 255, 255);
+    sprites[1] = charger_image("sprites/ennemis/zombie/move/zombie_moveV2.png", ecran, 0, 0, -1);
+    sprites[2] = charger_image("sprites/ennemis/zombie/attack/zombie_attack.png", ecran, 0, 0, -1);
+    sprites[3] = charger_image("sprites/effets/blood/blood_hitv3.png", ecran, 0, 0, -1);
+    sprites[4] = charger_image("sprites/effets/blood/blood_splatter.png", ecran, 255, 255, 255);
+    sprites[5] = charger_image("sprites/perso/survivor_shotgun.png", ecran, 255, 255, 255);
+    sprites[6] = charger_image("sprites/perso/survivor_rifle.png", ecran, 255, 255, 255);
+    sprites[7] = charger_image("sprites/projectiles/balle/balle_handgun.png", ecran, 255, 255, 255);
+    sprites[8] = charger_image("sprites/projectiles/balle/balle_shotgun.png", ecran, 255, 255, 255);
+    sprites[9] = charger_image("sprites/projectiles/balle/balle_rifle.png", ecran, 255, 255, 255);
+    sprites[10] = charger_image("sprites/perso/survivor_shotgun.png", ecran, 255, 255, 255);
+    sprites[11] = charger_image("sprites/perso/survivor_rifle.png", ecran, 255, 255, 255);
 
     //Sons
     musique = NULL;
@@ -98,10 +98,13 @@ int main(int argc, char *argv[])
 
       gameover = false;
       tir = false;
+      switchArme = false;
       vagueTerminee = false;
 
       vitesse = 25;
       vagueNum = 0;
+      nbTues = 0;
+      arme = 0;
       tempsActuel = 0;
       tempsPrecedent = 0;
       tempsActuelTir = 0;
@@ -142,37 +145,48 @@ int main(int argc, char *argv[])
                 gameover = true;
                 exit = true;
                 break;
+              case SDL_MOUSEWHEEL:
+                if(evenements.wheel.y > 0){
+                  arme++;
+                  if(arme > 2){
+                    arme = 0;
+                  }
+                } else if(evenements.wheel.y < 0){
+                  arme--;
+                  if(arme < 0){
+                    arme = 2;
+                  }
+                }
+                switchArme = true;
+                break;
               case SDL_MOUSEMOTION:
                 mouseX = evenements.motion.x;
                 mouseY = evenements.motion.y;
                 break;
               case SDL_MOUSEBUTTONDOWN:
-                switch(evenements.button.button)
-                {
+                switch(evenements.button.button){
                   case SDL_BUTTON_LEFT:
                     tir = true;
                     break;
                 }
                 break;
               case SDL_MOUSEBUTTONUP:
-                switch(evenements.button.button)
-                {
+                switch(evenements.button.button){
                   case SDL_BUTTON_LEFT:
                     tir = false;
                     break;
                 }
                 break;
-
               case SDL_KEYDOWN:
-                switch(evenements.key.keysym.sym)
-                {
+                switch(evenements.key.keysym.sym){
                   case SDLK_ESCAPE:
                     gameover = true;
                     exit = true;
                     break;
                 }
                 break;
-
+              default:
+                break;
             }
           }
 
@@ -204,7 +218,11 @@ int main(int argc, char *argv[])
 
           joueur_ptr = joueur(persosListe);
           if(joueur_ptr != NULL){
-            //Gestion déplacement/angle de tir
+            if(switchArme){
+              joueur_ptr->arme = arme;
+              changer_arme_joueur(joueur_ptr, arme, sprites);
+              switchArme = false;
+            }
             joueur_ptr->tir = tir;
             deplacement_joueur(joueur_ptr, mursListe, &xCamera, &yCamera, &dxCamera, &dyCamera);
             angle_joueur((joueur_ptr), mouseX, mouseY);
@@ -223,13 +241,12 @@ int main(int argc, char *argv[])
             gameover = true;
           }
 
-
           //Déplacement/angle de tir ennemis
           deplacement_ennemis(persosListe, mursListe, &effetsListe, sprites, xCamera, yCamera, dxCamera, dyCamera);
 
           //Tir
           tempsActuelTir = SDL_GetTicks();
-          ballesTirees = tir_update(ballesTirees, persosListe, mursListe, &effetsListe, tempsActuelTir, balleSprite, vitesse, xCamera, yCamera, sprites, &sons[0]);
+          ballesTirees = tir_update(ballesTirees, persosListe, mursListe, &effetsListe, tempsActuelTir, vitesse, xCamera, yCamera, &nbTues, sprites, &sons[0]);
 
           //Affichage
           SDL_RenderClear(ecran);
@@ -251,8 +268,6 @@ int main(int argc, char *argv[])
     //Nettoyage
     SDL_DestroyWindow(fenetre);
     SDL_DestroyRenderer(ecran);
-    SDL_DestroyTexture(balleSprite);
-    SDL_DestroyTexture(tmp);
     Mix_FreeMusic(musique);
     Mix_CloseAudio();
     SDL_Quit();
