@@ -14,7 +14,7 @@ Perso nouveau_joueur(SDL_Renderer *renderer, SDL_Texture **sprites){
   p.srcrect.w = 395;
   p.srcrect.h = 151;
   p.angle = 0;
-  p.vie = 20;
+  p.vie = 100;
   p.vitesse = 4;
   p.yMax = 0;
   p.arme = 0;
@@ -60,6 +60,16 @@ Perso nouvel_ennemi_1(SDL_Renderer *renderer, ListeR LR, SDL_Texture **sprites, 
   return p;
 }
 
+Perso nouvel_ennemi_2(SDL_Renderer *renderer, ListeR LR, SDL_Texture **sprites, int xCamera, int yCamera){
+  Perso p;
+  p = nouvel_ennemi_1(renderer, LR, sprites, xCamera, yCamera);
+  p.vie = 50;
+  p.vitesse = 3;
+  p.image = sprites[12];
+  p.arme = 10;
+  return p;
+}
+
 void afficher_perso(SDL_Renderer *renderer, Perso p) {
   SDL_RenderCopyEx(renderer, p.image, &p.srcrect, &p.pos, p.angle, NULL, SDL_FLIP_NONE);
   return;
@@ -69,7 +79,7 @@ void afficher_perso(SDL_Renderer *renderer, Perso p) {
 void charger_vagues_ennemis(int *tab){
   int n = 1;
   for(int j = 1; j < 101; j++){
-    if(j%5 == 0 ){
+    if(j%4 == 0 ){
       n += 1;
     }
     tab[j-1] = j * n;
@@ -150,51 +160,6 @@ void angle_ennemi(Perso *p){
   float angle;
   angle = atan2(350 - (p->pos.y + 25), 500 - (p->pos.x + 25));
   p->angle = angle;
-  return;
-}
-
-void animer_perso(Perso *p, Perso *joueur, SDL_Texture **sprites){
-  if(p->tir){
-    if(p->srcrect.w != 318){
-      p->image = sprites[2];
-      p->pos.w = 60;
-      p->pos.h = 60;
-      p->srcrect.w = 318;
-      p->srcrect.h = 294;
-      p->srcrect.y = 0;
-      p->yMax = 2646;
-      p->animFlip = 1;
-    } else {
-      p->srcrect.y += p->srcrect.h * p->animFlip;
-      if(p->srcrect.y == p->srcrect.h * 6){
-        if(joueur->vie < p->degats){
-          joueur->vie = 0;
-        }else {
-          joueur->vie -= p->degats;
-        }
-      } else if(p->srcrect.y == p->yMax){
-        p->image = sprites[1];
-        p->pos.w = 50;
-        p->pos.h = 50;
-        p->srcrect.w = 229;
-        p->srcrect.h = 259;
-        p->srcrect.y = 0;
-        p->yMax = 4403;
-        p->animFlip = 1;
-        p->tir = false;
-        p->vitesse = 2;
-      }
-    }
-
-  }
-
-  else {
-    p->srcrect.y += p->srcrect.h * p->animFlip;
-    if((p->srcrect.y >= p->yMax || p->srcrect.y < 0) && !p->tir){
-      p->animFlip = -p->animFlip;
-      p->srcrect.y += p->srcrect.h * p->animFlip;
-    }
-  }
   return;
 }
 

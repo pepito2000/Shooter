@@ -149,14 +149,19 @@ void charger_niveau(char *tab, ListeR *L){
         break;
       case 'L':
         rect.x = i * 50 + 30;
-        rect.y = j * 50 + 215;
-        rect.h = 360;
-        rect.w = 210;
+        rect.y = j * 50 + 213;
+        rect.h = 362;
+        rect.w = 167;
         cons_listeR(L, rect);
-        rect.x = i * 50 + 205 ;
-        rect.y = j * 50 + 40;
-        rect.h = 425;
-        rect.w = 570;
+        rect.x = i * 50 + 200;
+        rect.y = j * 50 + 463;
+        rect.h = 94;
+        rect.w = 47;
+        cons_listeR(L, rect);
+        rect.x = i * 50 + 200 ;
+        rect.y = j * 50 + 44;
+        rect.h = 417;
+        rect.w = 574;
         cons_listeR(L, rect);
         break;
       case 'F':

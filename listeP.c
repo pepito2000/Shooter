@@ -142,9 +142,7 @@ bool detecter_collision_perso(ListeP L, ListeE *LE, SDL_Rect rect, int angle, in
 }
 
 void detecter_collision_avec_joueur(Perso *p, Perso *joueur){
-
   int ax1, ax2, bx1, bx2, ay1, ay2, by1, by2;
-
   ax1 = p->pos.x;
   ax2 = p->pos.x + p->pos.w ;
   bx1 = joueur->pos.x + round(0.24 * joueur->pos.w);
@@ -163,25 +161,37 @@ void detecter_collision_avec_joueur(Perso *p, Perso *joueur){
 }
 
 
-void animer_persos(ListeP L, SDL_Texture **sprites, Perso *joueur){
-
- while(L != NULL){
-  if(L->data.ennemi){
-    animer_perso(&L->data, joueur, sprites);
-  }
-  L = L->next;
-  }
-  return;
-}
-
-
 void charger_vague_ennemis(SDL_Renderer *renderer, bool *b, int *vaguesEnnemis, int vagueNum, int xCamera, int yCamera, ListeP *LP, ListeR LR,SDL_Texture **sprites){
-  if(vaguesEnnemis[vagueNum] > 0){
-    cons_listeP(LP, nouvel_ennemi_1(renderer, LR, sprites, xCamera, yCamera));
-    vaguesEnnemis[vagueNum] -= 1;
+    if(vaguesEnnemis[vagueNum] > 0){
+      cons_listeP(LP, nouvel_ennemi_1(renderer, LR, sprites, xCamera, yCamera));
+      int nb = rand()%4 + 1;
+      if(nb == 1){
+        cons_listeP(LP, nouvel_ennemi_2(renderer, LR, sprites, xCamera, yCamera));
+      }
+      vaguesEnnemis[vagueNum] -= 1;
   } else {
     *b = true;
   }
   return;
 }
+
+bool detecter_collision_balle_avec_joueur(SDL_Rect pos, int degats, Perso *joueur){
+  int ax1, ax2, bx1, bx2, ay1, ay2, by1, by2;
+  ax1 = pos.x;
+  ax2 = pos.x + pos.w ;
+  bx1 = joueur->pos.x + round(0.24 * joueur->pos.w);
+  bx2 = joueur->pos.x + round(0.75 * joueur->pos.w);
+  ay1 = pos.y;
+  ay2 = pos.y + pos.h;
+  by1 = joueur->pos.y;
+  by2 = joueur->pos.y + joueur->pos.h;
+
+  if(ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1){
+    joueur->vie -= degats;
+    return true;
+  }
+  return false;
+}
+
+
 

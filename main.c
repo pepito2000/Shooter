@@ -1,7 +1,7 @@
 #include "image.h"
 #include "listeB.h"
 #include "SDL2/SDL_ttf.h"
-
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
     SDL_Window *fenetre;
     SDL_Event evenements;
     SDL_Renderer *ecran;
-    SDL_Texture *sprites[12], *spritesMap[20];
+    SDL_Texture *sprites[15], *spritesMap[20];
     float mouseX, mouseY;
-    int vitesse, vagueNum, nbTues = 0, arme, tempsActuel, tempsPrecedent, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
+    int vitesse, vagueNum, nbTues, arme, tempsPrecedent, tempsPrecedentTexte, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
         tempsActuelAnim, tempsPrecedentAnim, xCamera, yCamera, dxCamera, dyCamera, vaguesEnnemis[100];
     char map[62][60];
     ListeB ballesTirees;
@@ -22,112 +22,64 @@ int main(int argc, char *argv[])
     Perso p, *joueur_ptr;
     Mix_Music *musique;
     Mix_Chunk *sons[3];
+    TTF_Font *police;
 
 
-    //Initialisation SDL
-    if(SDL_Init(SDL_INIT_EVERYTHING))
-    {
+
+
+    if(SDL_Init(SDL_INIT_EVERYTHING)){
       printf("Erreur d'initialisation de la SDL %s", SDL_GetError());
       SDL_Quit();
       return EXIT_FAILURE;
     }
 
-
-    if(Mix_OpenAudio(44100, AUDIO_S16, 1, 4096) < 0)
-    {
+    if(Mix_OpenAudio(44100, AUDIO_S16, 1, 4096) < 0){
       printf("Erreur d'initialisation de la SDL %s", Mix_GetError() );
       SDL_Quit();
       return EXIT_FAILURE;
     }
 
-    if(TTF_Init() == -1)
-    {
+    if(TTF_Init() == -1){
     fprintf(stderr, "Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
     return (EXIT_FAILURE);
     }
 
-    //Création fenêtre
-    fenetre = SDL_CreateWindow("gameName", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 700, SDL_WINDOW_RESIZABLE);
-    if(fenetre == NULL)
-    {
+    fenetre = SDL_CreateWindow("Shooter Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 700, SDL_WINDOW_RESIZABLE);
+    if(fenetre == NULL){
       printf("Erreur d'initialisation de la fenetre %s", SDL_GetError());
       return EXIT_FAILURE;
     }
 
-    //Création renderer
     ecran = SDL_CreateRenderer(fenetre, -1, SDL_RENDERER_ACCELERATED);
 
-    //Initialisation texte
+    charger_images(&sprites[0], &spritesMap[0], ecran);
+
+    musique = NULL;
+    charger_sons(&musique, &sons[0]);
+
     SDL_Color couleur = {255, 20, 20};
-    SDL_Rect postext;
-    postext.x = 810;
-    postext.y = 0;
-    postext.w = 180;
-    postext.h = 50;
     SDL_Rect postext2;
-    postext2.x = 0;
+    postext2.x = 810;
     postext2.y = 0;
-    postext2.w = 150;
+    postext2.w = 180;
     postext2.h = 50;
+    SDL_Rect postext1;
+    postext1.x = 0;
+    postext1.y = 0;
+    postext1.w = 150;
+    postext1.h = 50;
     SDL_Rect postext3;
-    postext3.x = 370;
-    postext3.y = 350;
-    postext3.w = 300;
-    postext3.h = 100;
-    TTF_Font *police =  NULL;
-    police = TTF_OpenFont("RAVIE.ttf", 100);
-    if(police == NULL)
-        return false;
+    postext3.x = 810;
+    postext3.y = 50;
+    postext3.w = 180;
+    postext3.h = 50;
+    police = NULL;
+    police = TTF_OpenFont("police.otf", 100);
 
     SDL_Surface *pSurf;
     SDL_Texture *text;
-    SDL_Surface *pSurf2;
     SDL_Texture *text2;
-
-
-
-
-    //Chargement images
-    //Murs + Sols
-    spritesMap[0] = charger_image("sprites/map/sol.png", ecran, 0, 0, -1);
-    spritesMap[1] = charger_image("sprites/map/mur_h.png", ecran, 255, 255, 255);
-    spritesMap[2] = charger_image("sprites/map/mur_b.png", ecran, 255, 255, 255);
-    spritesMap[3] = charger_image("sprites/map/mur_g.png", ecran, 255, 255, 255);
-    spritesMap[4] = charger_image("sprites/map/mur_d.png", ecran, 255, 255, 255);
-    spritesMap[5] = charger_image("sprites/map/mur_hg.png", ecran, 255, 255, 255);
-    spritesMap[6] = charger_image("sprites/map/mur_hd.png", ecran, 255, 255, 255);
-    spritesMap[7] = charger_image("sprites/map/mur_bg.png", ecran, 255, 255, 255);
-    spritesMap[8] = charger_image("sprites/map/mur_bd.png", ecran, 255, 255, 255);
-    spritesMap[9] = charger_image("sprites/map/route_ver.png", ecran, 0, 0, -1);
-    spritesMap[10] = charger_image("sprites/map/route_hor.png", ecran, 0, 0, -1);
-    spritesMap[11] = charger_image("sprites/map/police_car.png", ecran, 0, 0, -1);
-    spritesMap[12] = charger_image("sprites/map/ambulance.png", ecran, 0, 0, -1);
-    spritesMap[13] = charger_image("sprites/map/eau.png", ecran, 0, 0, -1);
-    spritesMap[14] = charger_image("sprites/map/conteneurs.png", ecran, 0, 0, -1);
-    spritesMap[15] = charger_image("sprites/map/maison2.png", ecran, 0, 0, -1);
-    spritesMap[16] = charger_image("sprites/map/maison.png", ecran, 0, 0, -1);
-    spritesMap[17] = charger_image("sprites/map/herbe.png", ecran, 0, 0, -1);
-    spritesMap[18] = charger_image("sprites/map/maison3.png", ecran, 0, 0, -1);
-    spritesMap[19] = charger_image("sprites/map/fontaine.png", ecran, 0, 0, -1);
-
-    //Personnages + Effets
-    sprites[0] = charger_image("sprites/perso/survivor_handgun.png", ecran, 255, 255, 255);
-    sprites[1] = charger_image("sprites/ennemis/zombie/move/zombie_moveV2.png", ecran, 0, 0, -1);
-    sprites[2] = charger_image("sprites/ennemis/zombie/attack/zombie_attack.png", ecran, 0, 0, -1);
-    sprites[3] = charger_image("sprites/effets/blood/blood_hitv3.png", ecran, 0, 0, -1);
-    sprites[4] = charger_image("sprites/effets/blood/blood_splatter.png", ecran, 255, 255, 255);
-    sprites[5] = charger_image("sprites/perso/survivor_shotgun.png", ecran, 255, 255, 255);
-    sprites[6] = charger_image("sprites/perso/survivor_rifle.png", ecran, 255, 255, 255);
-    sprites[7] = charger_image("sprites/projectiles/balle/balle_handgun.png", ecran, 255, 255, 255);
-    sprites[8] = charger_image("sprites/projectiles/balle/balle_shotgun.png", ecran, 255, 255, 255);
-    sprites[9] = charger_image("sprites/projectiles/balle/balle_rifle.png", ecran, 255, 255, 255);
-    sprites[10] = charger_image("sprites/perso/survivor_shotgun.png", ecran, 255, 255, 255);
-    sprites[11] = charger_image("sprites/perso/survivor_rifle.png", ecran, 255, 255, 255);
-
-    //Sons
-    musique = NULL;
-
-    charger_sons(&musique, &sons[0]);
+    SDL_Texture *text3;
 
     exit = false;
 
@@ -142,9 +94,9 @@ int main(int argc, char *argv[])
       vagueNum = 0;
       nbTues = 0;
       arme = 0;
-      tempsActuel = 0;
       tempsPrecedent = 0;
       tempsActuelTir = 0;
+      tempsPrecedentTexte = 0;
       tempsActuelVague = 0;
       tempsPrecedentVague = 0;
       tempsActuelAnim = 0;
@@ -154,11 +106,16 @@ int main(int argc, char *argv[])
       dxCamera = 0;
       dyCamera = 0;
 
+
       mursListe = NULL;
       ballesTirees = NULL;
       effetsListe = NULL;
       persosListe = NULL;
       joueur_ptr = NULL;
+      pSurf = NULL;
+      text = NULL;
+      text2 = NULL;
+      text3 = NULL;
 
       charger_niveau(map[0], &mursListe);
 
@@ -168,12 +125,9 @@ int main(int argc, char *argv[])
       charger_vagues_ennemis(vaguesEnnemis);
 
 
-      //Boucle de jeu
       while(!gameover)
       {
-        tempsActuel = SDL_GetTicks();
-        if (tempsActuel > tempsPrecedent + 16) {
-          //Détection événements
+        if (SDL_GetTicks() > tempsPrecedent + 16) {
           while(SDL_PollEvent(&evenements))
           {
             switch(evenements.type)
@@ -252,7 +206,6 @@ int main(int argc, char *argv[])
             }
 
 
-
           joueur_ptr = joueur(persosListe);
           if(joueur_ptr != NULL){
             if(switchArme){
@@ -267,55 +220,56 @@ int main(int argc, char *argv[])
 
 
           tempsActuelAnim = SDL_GetTicks();
-          if(tempsActuelAnim > tempsPrecedentAnim + 40 ){
-            animer_persos(persosListe, sprites, joueur_ptr);
+          if(tempsActuelAnim > tempsPrecedentAnim + 40){
+            animer_balles(ballesTirees);
+            animer_persos(persosListe, ballesTirees, sprites, joueur_ptr);
             animer_effets(effetsListe);
             tempsPrecedentAnim = tempsActuelAnim;
           }
 
-          //Détection mort joueur
           if(joueur_ptr->vie <= 0){
-            SDL_Surface *pSurf3 = TTF_RenderText_Blended(police, "GameOver", couleur);
-            SDL_Texture *text3 = SDL_CreateTextureFromSurface(ecran, pSurf3);
-            SDL_RenderCopy(ecran, text3, NULL, &postext3);
             gameover = true;
           }
-          else{
-            char sc[10];
-            char score[] = "Score : ";
-            char pv[10];
-            char vie[] = "Vie : ";
-            sprintf(sc, "%d", nbTues);
-            strcat(score, sc);
-            sprintf(pv, "%d", joueur_ptr->vie);
-            strcat(vie, pv);
-            pSurf = TTF_RenderText_Blended(police, score, couleur); ////
-            text = SDL_CreateTextureFromSurface(ecran, pSurf);
-            pSurf2 = TTF_RenderText_Blended(police, vie, couleur);
-            text2 = SDL_CreateTextureFromSurface(ecran, pSurf2);
 
+          if(SDL_GetTicks() > tempsPrecedentTexte + 500){
+            char sc[11];
+            char pv[11];
+            char ma[11];
+            sc[0] = '\0';
+            pv[0] = '\0';
+            ma[0] = '\0';
+            sprintf(sc, "Score : %d", nbTues);
+            sprintf(pv, "Vie : %d", joueur_ptr->vie);
+            sprintf(ma, "Manche : %d", vagueNum + 1);
+            pSurf = TTF_RenderText_Blended(police, sc, couleur);
+            text = SDL_CreateTextureFromSurface(ecran, pSurf);
+            SDL_FreeSurface(pSurf);
+            pSurf = TTF_RenderText_Blended(police, pv, couleur);
+            text2 = SDL_CreateTextureFromSurface(ecran, pSurf);
+            SDL_FreeSurface(pSurf);
+            pSurf = TTF_RenderText_Blended(police, ma, couleur);
+            text3 = SDL_CreateTextureFromSurface(ecran, pSurf);
+            SDL_FreeSurface(pSurf);
+            tempsPrecedentTexte = SDL_GetTicks();
           }
 
-          //Déplacement/angle de tir ennemis
           deplacement_ennemis(persosListe, mursListe, &effetsListe, sprites, xCamera, yCamera, dxCamera, dyCamera);
 
-          //Tir
           tempsActuelTir = SDL_GetTicks();
-          ballesTirees = tir_update(ballesTirees, persosListe, mursListe, &effetsListe, tempsActuelTir, vitesse, xCamera, yCamera, &nbTues, sprites, &sons[0]);
+          ballesTirees = tir_update(ballesTirees, persosListe, mursListe, &effetsListe, tempsActuelTir, vitesse, xCamera, yCamera, dxCamera, dyCamera, &nbTues, sprites, &sons[0], joueur_ptr);
 
 
-
-          //Affichage
           SDL_RenderClear(ecran);
           afficher_niveau(map[0], ecran, spritesMap, xCamera, yCamera);
           afficher_listeE(ecran, effetsListe, dxCamera, dyCamera);
           afficher_listeP(ecran, persosListe);
           afficher_listeB(ecran, ballesTirees);
-          SDL_RenderCopy(ecran, text, NULL, &postext);
-          SDL_RenderCopy(ecran, text2, NULL, &postext2);
+          SDL_RenderCopy(ecran, text, NULL, &postext2);
+          SDL_RenderCopy(ecran, text2, NULL, &postext1);
+          SDL_RenderCopy(ecran, text3, NULL, &postext3);
           SDL_RenderPresent(ecran);
 
-          tempsPrecedent = tempsActuel;
+          tempsPrecedent = SDL_GetTicks();
         }
       }
 
@@ -324,7 +278,6 @@ int main(int argc, char *argv[])
 
     }
 
-    //Nettoyage
     SDL_DestroyWindow(fenetre);
     SDL_DestroyRenderer(ecran);
     Mix_FreeMusic(musique);

@@ -3,6 +3,10 @@
 Effet nouvel_effet_bloodHit(SDL_Texture **sprites, SDL_Rect pos, int angle){
   Effet e;
   e.pos = pos;
+  e.pos.x -= 8;
+  e.pos.y -= 8;
+  e.pos.w = 60;
+  e.pos.h = 60;
   e.srcrect.x = 0;
   e.srcrect.y = 0;
   e.srcrect.w = 128;
@@ -19,8 +23,8 @@ Effet nouvel_effet_bloodSplatter(SDL_Texture **sprites, SDL_Rect pos, int angle)
   e.pos = pos;
   e.pos.x -= 20;
   e.pos.y -= 20;
-  e.pos.w = 70;
-  e.pos.h = 70;
+  e.pos.w = 80;
+  e.pos.h = 80;
   e.srcrect.x = 0;
   e.srcrect.y = 0;
   e.srcrect.w = 100;
