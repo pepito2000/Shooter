@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
     SDL_Color couleur = {255, 20, 20, 0};
 
-    postext1.x = 0;
+    postext1.x = 10;
     postext1.y = 0;
     postext1.w = 150;
     postext1.h = 50;
@@ -244,14 +244,14 @@ int main(int argc, char *argv[])
             while (caractereActuel != EOF){
                 caractereActuel = fgetc(fichier);
             }
-            char score[11];
+            char score[13];
             sprintf(score, "Score : %d \n", nbTues);
             fputs(score, fichier);
             fclose(fichier);
             gameover = true;
           }
 
-          if(SDL_GetTicks() > tempsPrecedentTexte + 1000){
+          if(SDL_GetTicks() > tempsPrecedentTexte + 500){
             char sc[13];
             char pv[13];
             char ma[13];
