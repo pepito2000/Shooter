@@ -10,7 +10,9 @@ int main(int argc, char *argv[])
     SDL_Window *fenetre;
     SDL_Event evenements;
     SDL_Renderer *ecran;
-    SDL_Texture *sprites[15], *spritesMap[20];
+    SDL_Texture *sprites[15], *spritesMap[20], *text, *text2, *text3, *textGameover;
+    SDL_Rect postext1, postext2, postext3, posGameover;
+    SDL_Surface *pSurf;
     float mouseX, mouseY;
     int vitesse, vagueNum, nbTues, arme, tempsPrecedent, tempsPrecedentTexte, tempsActuelTir, tempsActuelVague, tempsPrecedentVague,
         tempsActuelAnim, tempsPrecedentAnim, xCamera, yCamera, dxCamera, dyCamera, vaguesEnnemis[100];
@@ -57,29 +59,36 @@ int main(int argc, char *argv[])
     musique = NULL;
     charger_sons(&musique, &sons[0]);
 
-    SDL_Color couleur = {255, 20, 20};
-    SDL_Rect postext2;
-    postext2.x = 810;
-    postext2.y = 0;
-    postext2.w = 180;
-    postext2.h = 50;
-    SDL_Rect postext1;
+    SDL_Color couleur = {255, 20, 20, 0};
+
     postext1.x = 0;
     postext1.y = 0;
     postext1.w = 150;
     postext1.h = 50;
-    SDL_Rect postext3;
+
+    postext2.x = 810;
+    postext2.y = 0;
+    postext2.w = 180;
+    postext2.h = 50;
+
     postext3.x = 810;
     postext3.y = 50;
     postext3.w = 180;
     postext3.h = 50;
+
+    posGameover.x = 200;
+    posGameover.y = 200;
+    posGameover.w = 600;
+    posGameover.h = 200;
+
     police = NULL;
     police = TTF_OpenFont("police.otf", 100);
 
-    SDL_Surface *pSurf;
-    SDL_Texture *text;
-    SDL_Texture *text2;
-    SDL_Texture *text3;
+
+    pSurf = TTF_RenderText_Blended(police, "GAMEOVER", couleur);
+    textGameover = SDL_CreateTextureFromSurface(ecran, pSurf);
+    SDL_FreeSurface(pSurf);
+
 
     exit = false;
 
@@ -105,7 +114,6 @@ int main(int argc, char *argv[])
       yCamera = 0;
       dxCamera = 0;
       dyCamera = 0;
-
 
       mursListe = NULL;
       ballesTirees = NULL;
@@ -182,7 +190,7 @@ int main(int argc, char *argv[])
           }
 
           if(Mix_PlayingMusic() == 0) {
-            Mix_VolumeMusic(20);
+            Mix_VolumeMusic(30);
             Mix_FadeInMusic(musique, 1, 1000);
           }
 
@@ -231,10 +239,10 @@ int main(int argc, char *argv[])
             gameover = true;
           }
 
-          if(SDL_GetTicks() > tempsPrecedentTexte + 500){
-            char sc[11];
-            char pv[11];
-            char ma[11];
+          if(SDL_GetTicks() > tempsPrecedentTexte + 1000){
+            char sc[13];
+            char pv[13];
+            char ma[13];
             sc[0] = '\0';
             pv[0] = '\0';
             ma[0] = '\0';
@@ -273,15 +281,28 @@ int main(int argc, char *argv[])
         }
       }
 
-      if(gameover)
-      printf("gameover :(\n");
-
+      Mix_HaltMusic();
+      if(!exit){
+        int gameoverTimer = SDL_GetTicks();
+        if(gameover){
+          while(SDL_GetTicks() < gameoverTimer + 3000){
+            SDL_RenderCopy(ecran, textGameover, NULL, &posGameover);
+            SDL_RenderPresent(ecran);
+          }
+        }
+      }
     }
 
     SDL_DestroyWindow(fenetre);
     SDL_DestroyRenderer(ecran);
     Mix_FreeMusic(musique);
+    Mix_FreeChunk(sons[0]);
+    Mix_FreeChunk(sons[1]);
+    Mix_FreeChunk(sons[2]);
     Mix_CloseAudio();
+    free(joueur_ptr);
+    IMG_Quit();
+    TTF_Quit();
     SDL_Quit();
     return EXIT_SUCCESS;
 }
