@@ -26,6 +26,9 @@ int main(int argc, char *argv[])
     Mix_Chunk *sons[3];
     TTF_Font *police;
 
+    FILE* fichier = NULL;
+    fichier = fopen("tab_des_scores.txt", "r+");
+
 
 
 
@@ -236,6 +239,15 @@ int main(int argc, char *argv[])
           }
 
           if(joueur_ptr->vie <= 0){
+
+            int caractereActuel;
+            while (caractereActuel != EOF){
+                caractereActuel = fgetc(fichier);
+            }
+            char score[11];
+            sprintf(score, "Score : %d \n", nbTues);
+            fputs(score, fichier);
+            fclose(fichier);
             gameover = true;
           }
 
