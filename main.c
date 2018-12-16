@@ -247,7 +247,6 @@ int main(int argc, char *argv[])
             char score[13];
             sprintf(score, "Score : %d \n", nbTues);
             fputs(score, fichier);
-            fclose(fichier);
             gameover = true;
           }
 
@@ -305,6 +304,7 @@ int main(int argc, char *argv[])
       }
     }
 
+    fclose(fichier);
     SDL_DestroyWindow(fenetre);
     SDL_DestroyRenderer(ecran);
     Mix_FreeMusic(musique);
