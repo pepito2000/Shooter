@@ -137,7 +137,7 @@ ListeB tir_update(ListeB LB, ListeP LP, ListeR LR, ListeE *LE, int time, int v, 
         break;
       }
     } else {
-      if(time > tmp->data.tempsTirPrecedent + 3000 && tmp->data.arme == 10){
+      if(time > tmp->data.tempsTirPrecedent + 2000 && tmp->data.arme == 10){
         if(tmp->data.collision == false && tmp->data.pos.x > 100 &&
           tmp->data.pos.x < 900 && tmp->data.pos.y > 100 && tmp->data.pos.y < 600){
           tmp->data.tir = true;
